@@ -1,15 +1,16 @@
-import { useRef, useCallback } from 'react';
-import { Animated, LayoutAnimation } from 'react-native';
+import { useCallback } from 'react';
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withSpring,
+  withSequence,
+} from 'react-native-reanimated';
 import { 
-  fadeAnimation, 
-  slideAnimation, 
-  scaleAnimation, 
-  bounceAnimation, 
-  springAnimation,
-  layoutAnimation,
   AnimationType,
   AnimationDirection,
-  AnimationConfig
+  AnimationConfig,
+  DEFAULT_CONFIG
 } from '../../utils/animations';
 
 interface UseAnimationOptions {
@@ -25,40 +26,64 @@ export function useAnimation({
   direction = 'up',
   config = {},
 }: UseAnimationOptions = {}) {
-  const animatedValue = useRef(new Animated.Value(initialValue)).current;
+  const value = useSharedValue(initialValue);
 
   const animate = useCallback((toValue: number) => {
-    let animation;
-
     switch (type) {
       case 'fade':
-        animation = fadeAnimation(animatedValue, toValue, config);
-        break;
       case 'slide':
-        animation = slideAnimation(animatedValue, toValue, direction, config);
-        break;
       case 'scale':
-        animation = scaleAnimation(animatedValue, toValue, config);
+        value.value = withTiming(toValue, {
+          duration: config.duration || DEFAULT_CONFIG.duration,
+          easing: config.easing || DEFAULT_CONFIG.easing,
+        });
         break;
       case 'bounce':
-        animation = bounceAnimation(animatedValue, toValue, config);
+        value.value = withSequence(
+          withSpring(1.2, {
+            damping: 8,
+            stiffness: 40,
+          }),
+          withSpring(1, {
+            damping: 8,
+            stiffness: 40,
+          })
+        );
         break;
       case 'spring':
-        animation = springAnimation(animatedValue, toValue, config);
+        value.value = withSpring(toValue, {
+          damping: 7,
+          stiffness: 40,
+        });
         break;
       default:
-        animation = fadeAnimation(animatedValue, toValue, config);
+        value.value = withTiming(toValue, {
+          duration: config.duration || DEFAULT_CONFIG.duration,
+          easing: config.easing || DEFAULT_CONFIG.easing,
+        });
     }
+  }, [type, direction, config, value]);
 
-    animation.start();
-  }, [type, direction, config, animatedValue]);
-
-  const animateLayout = useCallback((
-    type: 'spring' | 'linear' | 'easeInEaseOut' = 'spring',
-    duration: number = 300
-  ) => {
-    layoutAnimation(type, duration);
-  }, []);
+  const animatedStyle = useAnimatedStyle(() => {
+    switch (type) {
+      case 'fade':
+        return { opacity: value.value };
+      case 'slide':
+        const transforms = [];
+        if (direction === 'left' || direction === 'right') {
+          transforms.push({ translateX: value.value });
+        } else {
+          transforms.push({ translateY: value.value });
+        }
+        return { transform: transforms };
+      case 'scale':
+      case 'bounce':
+      case 'spring':
+        return { transform: [{ scale: value.value }] };
+      default:
+        return { opacity: value.value };
+    }
+  });
 
   // Predefined animations
   const fadeIn = useCallback(() => {
@@ -70,8 +95,9 @@ export function useAnimation({
   }, [animate]);
 
   const slideIn = useCallback(() => {
-    animate(100);
-  }, [animate]);
+    const toValue = direction === 'up' || direction === 'left' ? -100 : 100;
+    animate(toValue);
+  }, [animate, direction]);
 
   const slideOut = useCallback(() => {
     animate(0);
@@ -94,9 +120,8 @@ export function useAnimation({
   }, [animate]);
 
   return {
-    animatedValue,
+    animatedStyle,
     animate,
-    animateLayout,
     // Predefined animations
     fadeIn,
     fadeOut,

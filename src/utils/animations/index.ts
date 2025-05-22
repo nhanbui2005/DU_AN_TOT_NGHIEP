@@ -1,4 +1,15 @@
-import { Animated, Easing, LayoutAnimation, Platform, UIManager } from 'react-native';
+import { Platform, UIManager } from 'react-native';
+import  {
+  withSpring,
+  withTiming,
+  withSequence,
+  withDelay,
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  interpolate,
+  Extrapolate,
+} from 'react-native-reanimated';
 
 // Enable LayoutAnimation for Android
 if (Platform.OS === 'android') {
@@ -15,193 +26,151 @@ export type AnimationDirection = 'up' | 'down' | 'left' | 'right';
 export interface AnimationConfig {
   duration?: number;
   delay?: number;
-  useNativeDriver?: boolean;
   easing?: (value: number) => number;
 }
 
 // Default animation configurations
-const DEFAULT_CONFIG = {
+export const DEFAULT_CONFIG = {
   duration: 300,
   delay: 0,
-  useNativeDriver: true,
   easing: Easing.ease,
 } as const;
 
 /**
  * Fade animation
  */
-export const fadeAnimation = (
-  value: Animated.Value,
-  toValue: number,
-  config: AnimationConfig = {}
-) => {
-  return Animated.timing(value, {
-    ...DEFAULT_CONFIG,
-    ...config,
-    toValue,
-  });
+export const useFadeAnimation = (initialValue: number = 0) => {
+  const opacity = useSharedValue(initialValue);
+
+  const fadeIn = (config: AnimationConfig = {}) => {
+    opacity.value = withTiming(1, {
+      duration: config.duration || DEFAULT_CONFIG.duration,
+      easing: config.easing || DEFAULT_CONFIG.easing,
+    });
+  };
+
+  const fadeOut = (config: AnimationConfig = {}) => {
+    opacity.value = withTiming(0, {
+      duration: config.duration || DEFAULT_CONFIG.duration,
+      easing: config.easing || DEFAULT_CONFIG.easing,
+    });
+  };
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
+
+  return { animatedStyle, fadeIn, fadeOut };
 };
 
 /**
  * Slide animation
  */
-export const slideAnimation = (
-  value: Animated.Value,
-  toValue: number,
-  direction: AnimationDirection = 'up',
-  config: AnimationConfig = {}
+export const useSlideAnimation = (
+  initialValue: number = 0,
+  direction: AnimationDirection = 'up'
 ) => {
-  const translateValue = direction === 'up' || direction === 'down' ? 'translateY' : 'translateX';
-  const multiplier = direction === 'up' || direction === 'left' ? -1 : 1;
+  const translate = useSharedValue(initialValue);
 
-  return Animated.timing(value, {
-    ...DEFAULT_CONFIG,
-    ...config,
-    toValue: toValue * multiplier,
+  const slideIn = (config: AnimationConfig = {}) => {
+    const toValue = direction === 'up' || direction === 'left' ? -100 : 100;
+    translate.value = withTiming(toValue, {
+      duration: config.duration || DEFAULT_CONFIG.duration,
+      easing: config.easing || DEFAULT_CONFIG.easing,
+    });
+  };
+
+  const slideOut = (config: AnimationConfig = {}) => {
+    translate.value = withTiming(0, {
+      duration: config.duration || DEFAULT_CONFIG.duration,
+      easing: config.easing || DEFAULT_CONFIG.easing,
+    });
+  };
+
+  const animatedStyle = useAnimatedStyle(() => {
+    const transforms = [];
+    if (direction === 'left' || direction === 'right') {
+      transforms.push({ translateX: translate.value });
+    } else {
+      transforms.push({ translateY: translate.value });
+    }
+    return {
+      transform: transforms,
+    };
   });
+
+  return { animatedStyle, slideIn, slideOut };
 };
 
 /**
  * Scale animation
  */
-export const scaleAnimation = (
-  value: Animated.Value,
-  toValue: number,
-  config: AnimationConfig = {}
-) => {
-  return Animated.timing(value, {
-    ...DEFAULT_CONFIG,
-    ...config,
-    toValue,
-  });
+export const useScaleAnimation = (initialValue: number = 0) => {
+  const scale = useSharedValue(initialValue);
+
+  const scaleIn = (config: AnimationConfig = {}) => {
+    scale.value = withTiming(1, {
+      duration: config.duration || DEFAULT_CONFIG.duration,
+      easing: config.easing || DEFAULT_CONFIG.easing,
+    });
+  };
+
+  const scaleOut = (config: AnimationConfig = {}) => {
+    scale.value = withTiming(0, {
+      duration: config.duration || DEFAULT_CONFIG.duration,
+      easing: config.easing || DEFAULT_CONFIG.easing,
+    });
+  };
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  return { animatedStyle, scaleIn, scaleOut };
 };
 
 /**
  * Bounce animation
  */
-export const bounceAnimation = (
-  value: Animated.Value,
-  toValue: number,
-  config: AnimationConfig = {}
-) => {
-  return Animated.spring(value, {
-    ...DEFAULT_CONFIG,
-    ...config,
-    toValue,
-    friction: 8,
-    tension: 40,
-  });
+export const useBounceAnimation = (initialValue: number = 0) => {
+  const scale = useSharedValue(initialValue);
+
+  const bounce = (config: AnimationConfig = {}) => {
+    scale.value = withSequence(
+      withSpring(1.2, {
+        damping: 8,
+        stiffness: 40,
+      }),
+      withSpring(1, {
+        damping: 8,
+        stiffness: 40,
+      })
+    );
+  };
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  return { animatedStyle, bounce };
 };
 
 /**
  * Spring animation
  */
-export const springAnimation = (
-  value: Animated.Value,
-  toValue: number,
-  config: AnimationConfig = {}
-) => {
-  return Animated.spring(value, {
-    ...DEFAULT_CONFIG,
-    ...config,
-    toValue,
-    friction: 7,
-    tension: 40,
-  });
-};
-
-/**
- * Layout animation for smooth transitions
- */
-export const layoutAnimation = (
-  type: 'spring' | 'linear' | 'easeInEaseOut' = 'spring',
-  duration: number = 300
-) => {
-  LayoutAnimation.configureNext(
-    LayoutAnimation.create(
-      duration,
-      LayoutAnimation.Types[type],
-      LayoutAnimation.Properties.opacity
-    )
-  );
-};
-
-/**
- * Custom hook for fade animation
- */
-export const useFadeAnimation = (initialValue: number = 0) => {
-  const fadeAnim = new Animated.Value(initialValue);
-
-  const fadeIn = (config?: AnimationConfig) => {
-    fadeAnimation(fadeAnim, 1, config).start();
-  };
-
-  const fadeOut = (config?: AnimationConfig) => {
-    fadeAnimation(fadeAnim, 0, config).start();
-  };
-
-  return { fadeAnim, fadeIn, fadeOut };
-};
-
-/**
- * Custom hook for slide animation
- */
-export const useSlideAnimation = (
-  initialValue: number = 0,
-  direction: AnimationDirection = 'up'
-) => {
-  const slideAnim = new Animated.Value(initialValue);
-
-  const slideIn = (config?: AnimationConfig) => {
-    slideAnimation(slideAnim, 100, direction, config).start();
-  };
-
-  const slideOut = (config?: AnimationConfig) => {
-    slideAnimation(slideAnim, 0, direction, config).start();
-  };
-
-  return { slideAnim, slideIn, slideOut };
-};
-
-/**
- * Custom hook for scale animation
- */
-export const useScaleAnimation = (initialValue: number = 0) => {
-  const scaleAnim = new Animated.Value(initialValue);
-
-  const scaleIn = (config?: AnimationConfig) => {
-    scaleAnimation(scaleAnim, 1, config).start();
-  };
-
-  const scaleOut = (config?: AnimationConfig) => {
-    scaleAnimation(scaleAnim, 0, config).start();
-  };
-
-  return { scaleAnim, scaleIn, scaleOut };
-};
-
-/**
- * Custom hook for bounce animation
- */
-export const useBounceAnimation = (initialValue: number = 0) => {
-  const bounceAnim = new Animated.Value(initialValue);
-
-  const bounce = (config?: AnimationConfig) => {
-    bounceAnimation(bounceAnim, 1, config).start();
-  };
-
-  return { bounceAnim, bounce };
-};
-
-/**
- * Custom hook for spring animation
- */
 export const useSpringAnimation = (initialValue: number = 0) => {
-  const springAnim = new Animated.Value(initialValue);
+  const value = useSharedValue(initialValue);
 
-  const spring = (toValue: number, config?: AnimationConfig) => {
-    springAnimation(springAnim, toValue, config).start();
+  const spring = (toValue: number, config: AnimationConfig = {}) => {
+    value.value = withSpring(toValue, {
+      damping: 7,
+      stiffness: 40,
+    });
   };
 
-  return { springAnim, spring };
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: value.value }],
+  }));
+
+  return { animatedStyle, spring };
 }; 
