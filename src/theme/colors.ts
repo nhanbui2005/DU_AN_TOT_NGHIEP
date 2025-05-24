@@ -76,5 +76,10 @@ export const colors = {
   success: '#4CAF50',
   warning: '#FFC107',
   error:   '#F44336',
-  star:    '#FFD600',
+  star: '#FFD600',
+  buttun: {
+    primary: '#2979F6',
+    secondary: '#9C27B0',
+    disable: '#9D9D9D'
+  },
 };

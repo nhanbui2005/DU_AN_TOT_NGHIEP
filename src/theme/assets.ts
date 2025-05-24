@@ -24,6 +24,7 @@ export const assets = {
     },
   },
   images: {
-
+      Google: require('@/assets/icons/Google.png'),
+      Apple: require('@/assets/icons/Applelogo.png'),
   },
 };

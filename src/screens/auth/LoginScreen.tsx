@@ -42,7 +42,7 @@ export const LoginScreen = ({ navigation }: AuthScreenProps) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Đăng nhập</Text>
-        <Text style={styles.subtitle}>Chào mừng bạn quay trở lại!</Text>
+    
       </View>
 
       <View style={styles.form}>
