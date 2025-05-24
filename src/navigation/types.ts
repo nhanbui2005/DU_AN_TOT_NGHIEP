@@ -18,6 +18,8 @@ export type MainStackParamList = {
   Shop: undefined;
   Booking: undefined;
   Card: undefined;
+  Check: undefined;
+  Setting: undefined;
   Profile: undefined;
   // Add more screens here
 }; 
