@@ -22,6 +22,16 @@ export const assets = {
         inactive: require('../../assets/icons/profile-inactive.png'),
       },
     },
+    search: {
+      back : require('../../assets/icons/back.png'),
+      pluss: require('../../assets/icons/plussign.png'),
+      vecter:require('../../assets/icons/Vector.png')
+    },
+    details: {
+      heartinactive : require('../../assets/icons/heart-inactive.png'),
+      linear: require('../../assets/icons/stylelinear.png'),
+      Stylelinearplusss: require('../../assets/icons/Stylelinearplusss.png')
+    }
   },
   images: {
       Google: require('@/assets/icons/Google.png'),
