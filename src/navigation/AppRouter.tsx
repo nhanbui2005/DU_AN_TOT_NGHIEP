@@ -22,7 +22,6 @@ export const AppRouter = () => {
           <Stack.Screen name="Main" component={MainRouter} />
         )} */}
                   <Stack.Screen name="Main" component={MainRouter} />
-
       </Stack.Navigator>
     </NavigationContainer>
   );
