@@ -16,31 +16,51 @@ const messages = {
 };
 
 export const loginSchema = Yup.object().shape({
-  email: Yup.string()
-    .required(messages.required)
-    .matches(patterns.email, messages.email),
+  phone: Yup.string()
+    .required('Phone number is required')
+    .matches(/^[0-9]{10}$/, 'Phone number must be 10 digits'),
   password: Yup.string()
-    .required(messages.required)
-    .matches(patterns.password, messages.password),
+    .required('Password is required')
+    .min(6, 'Password must be at least 6 characters'),
 });
 
 export const registerSchema = Yup.object().shape({
   fullName: Yup.string()
-    .required(messages.required)
-    .min(2, messages.minLength('Họ tên', 2))
-    .max(50, messages.maxLength('Họ tên', 50)),
+    .required('Full name is required')
+    .min(2, 'Full name must be at least 2 characters'),
   email: Yup.string()
-    .required(messages.required)
-    .matches(patterns.email, messages.email),
+    .required('Email is required')
+    .email('Invalid email format'),
   phone: Yup.string()
-    .required(messages.required)
-    .matches(patterns.phone, messages.phone),
+    .required('Phone number is required')
+    .matches(/^[0-9]{10}$/, 'Phone number must be 10 digits'),
   password: Yup.string()
-    .required(messages.required)
-    .matches(patterns.password, messages.password),
+    .required('Password is required')
+    .min(6, 'Password must be at least 6 characters'),
   confirmPassword: Yup.string()
-    .required(messages.required)
-    .oneOf([Yup.ref('password')], 'Mật khẩu xác nhận không khớp'),
+    .required('Confirm password is required')
+    .oneOf([Yup.ref('password')], 'Passwords must match'),
+});
+
+export const forgotPasswordSchema = Yup.object().shape({
+  phone: Yup.string()
+    .required('Phone number is required')
+    .matches(/^[0-9]{10}$/, 'Phone number must be 10 digits'),
+});
+
+export const verifyOTPSchema = Yup.object().shape({
+  otp: Yup.string()
+    .required('OTP is required')
+    .matches(/^[0-9]{6}$/, 'OTP must be 6 digits'),
+});
+
+export const resetPasswordSchema = Yup.object().shape({
+  newPassword: Yup.string()
+    .required('New password is required')
+    .min(6, 'Password must be at least 6 characters'),
+  confirmPassword: Yup.string()
+    .required('Confirm password is required')
+    .oneOf([Yup.ref('newPassword')], 'Passwords must match'),
 });
 
 // Profile form validation

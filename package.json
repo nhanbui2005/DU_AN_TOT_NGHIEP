@@ -24,13 +24,13 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-native": "0.79.2",
-    "react-native-mmkv": "^3.2.0",
     "react-native-reanimated": "^3.17.5",
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "^0.20.0",
     "react-redux": "^9.2.0",
     "redux-persist": "^6.0.0",
-    "yup": "^1.6.1"
+    "yup": "^1.6.1",
+    "expo-secure-store": "~14.2.3"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

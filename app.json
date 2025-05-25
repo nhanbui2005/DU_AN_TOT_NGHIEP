@@ -22,7 +22,15 @@
     },
     "web": {},
     "assetBundlePatterns": [
-      "**/*"
+      "assets/fonts/*"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "3523781e-c227-4450-bdfd-5704f83cae18"
+      }
+    },
+    "plugins": [
+      "expo-secure-store"
     ]
   }
 }
