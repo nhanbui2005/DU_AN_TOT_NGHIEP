@@ -41,7 +41,7 @@ export const ProductDetails = () => {
                         style={styles.image}
                     />
                     <TouchableOpacity style={styles.backButton}>
-                        <Image source={assets.icons.search.back} />
+                        <Image source={assets.icons.back} />
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.heartButton}>
                         <Image source={assets.icons.details.heartinactive} />

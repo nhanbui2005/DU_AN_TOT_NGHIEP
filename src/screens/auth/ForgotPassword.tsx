@@ -1,19 +1,54 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Text, TouchableOpacity, Image } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity, Image, Alert } from "react-native";
 import { FormInput } from "../../components/Form/FormInput";
-import { BORDER_RADIUS, SIZE, SPACING } from "../../theme/layout";
+import { BORDER_RADIUS, SPACING } from "../../theme/layout";
 import { useNavigation } from "@react-navigation/native";
 import { colors } from "@/src/theme";
 import { typography } from "@/src/theme";
 import { assets } from "@/src/theme/assets";
+import { useFormik } from "formik";
+import { forgotPasswordSchema } from "../../utils/validation";
+import authApi from "../../api/auth";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { AuthStackParamList } from "../../navigation/types";
+
+type ForgotPasswordNavigationProp = NativeStackNavigationProp<AuthStackParamList, "ForgotPassword">;
 
 const ForgotPassword = () => {
-  const navigation = useNavigation();
-  const [phone, setPhone] = useState("");
+  const navigation = useNavigation<ForgotPasswordNavigationProp>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const {
+    values,
+    errors,
+    touched,
+    handleChange,
+    handleBlur,
+    handleSubmit,
+  } = useFormik({
+    initialValues: {
+      phone: "",
+    },
+    validationSchema: forgotPasswordSchema,
+    onSubmit: async (values) => {
+      try {
+        setIsSubmitting(true);
+        await authApi.forgotPassword(values);
+        navigation.navigate("Verify", { phone: values.phone });
+      } catch (error: any) {
+        Alert.alert(
+          "Error",
+          error.response?.data?.message || "Failed to send OTP. Please try again."
+        );
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+  });
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton}>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Image source={require("@/assets/icons/Vector9.png")} />
       </TouchableOpacity>
 
@@ -27,14 +62,16 @@ const ForgotPassword = () => {
 
       <Text style={styles.header}>Forgot Password?</Text>
       <Text style={styles.description}>
-        Don’t worry! it happens. Please enter phone number associated with your
+        Don't worry! it happens. Please enter phone number associated with your
         account
       </Text>
 
       <FormInput
         label="Enter your mobile number"
-        value={phone}
-        onChangeText={setPhone}
+        value={values.phone}
+        onChangeText={(text: string) => handleChange("phone")(text)}
+        onBlur={() => handleBlur("phone")}
+        error={touched.phone ? errors.phone : undefined}
         keyboardType="phone-pad"
         placeholder="458-465-6466"
         leftIcon={
@@ -46,11 +83,16 @@ const ForgotPassword = () => {
             />
           </View>
         }
-        rightIcon={<Image source={require("@/assets/icons/tick2.png")} />}
       />
 
-      <TouchableOpacity style={styles.otpButton} onPress={() => navigation.navigate("Verify")}>
-        <Text style={styles.otpText}>Get OTP</Text>
+      <TouchableOpacity 
+        style={[styles.otpButton, isSubmitting && styles.buttonDisabled]}
+        onPress={() => handleSubmit()}
+        disabled={isSubmitting}
+      >
+        <Text style={styles.otpText}>
+          {isSubmitting ? "Sending OTP..." : "Get OTP"}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -70,7 +112,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: typography.fontSize["3xl"],
-    fontWeight: typography.fontWeight.bold,
+    fontWeight: "700",
     alignSelf: "center",
     marginBottom: SPACING.L,
   },
@@ -82,7 +124,7 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: typography.fontSize["2xl"],
-    fontWeight: typography.fontWeight.bold,
+    fontWeight: "700",
     textAlign: "center",
     marginBottom: SPACING.M,
   },
@@ -114,9 +156,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: SPACING.L,
   },
+  buttonDisabled: {
+    opacity: 0.7,
+  },
   otpText: {
     color: colors.white,
     fontSize: typography.fontSize.md,
-    fontWeight: typography.fontWeight.bold,
+    fontWeight: "700",
   },
 });

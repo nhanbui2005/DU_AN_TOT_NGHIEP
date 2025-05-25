@@ -82,7 +82,7 @@ export const ProductSeach: React.FC<Props> = () => {
 
       <View style={styles.header}>
         <TouchableOpacity>
-          <Image source={assets.icons.search.back} />
+          <Image source={assets.icons.back} />
         </TouchableOpacity>
         <Typography variant="h5" style={styles.headerTitle}>
           Pet Food
