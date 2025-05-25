@@ -82,7 +82,10 @@
 
 import React from "react";
 import { View, TextInput, Text, StyleSheet } from "react-native";
-import { LAYOUT, SPACING } from "../../theme/layout";
+import { BORDER_RADIUS, LAYOUT, SPACING } from "../../theme/layout";
+import { colors } from "@/src/theme";
+import { typography } from "@/src/theme";
+import { assets } from "@/src/theme/assets";
 
 interface FormInputProps {
   label?: string;
@@ -159,39 +162,39 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    fontWeight: "500",
+    fontWeight: typography.fontWeight.medium,
     marginBottom: SPACING.XS,
-    color: "#333",
+    color: colors.grey[700],
   },
   inputWrapper: {
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 16,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    backgroundColor: "#fff",
+    borderColor: colors.grey[600],
+    borderRadius: BORDER_RADIUS.L,
+    paddingHorizontal: SPACING.M,
+    paddingVertical: SPACING.S,
+    backgroundColor: colors.background.default,
   },
   input: {
     flex: 1,
-    fontSize: 16,
-    color: "#000",
+    fontSize: typography.fontSize.md,
+    color: colors.black,
   },
   inputError: {
-    borderColor: "#FF3B30",
+    borderColor: colors.red[500],
   },
   errorText: {
-    color: "#FF3B30",
-    fontSize: 12,
+    color: colors.red[500],
+    fontSize: typography.fontSize.xs,
     marginTop: SPACING.XS,
   },
   leftIcon: {
-    marginRight: 8,
+    marginRight: SPACING.S,
     flexDirection: "row",
     alignItems: "center",
   },
   rightIcon: {
-    marginLeft: 8,
+    marginLeft: SPACING.S,
   },
 });
