@@ -55,6 +55,8 @@ export const colors = {
     700: '#616161',
     800: '#424242',
     900: '#222B45',     // Text đậm
+    1000:'#0066FF',
+    1100:'#E6F0FF',
   },
 
   // Các màu cơ bản cho UI
@@ -76,5 +78,10 @@ export const colors = {
   success: '#4CAF50',
   warning: '#FFC107',
   error:   '#F44336',
-  star:    '#FFD600',
+  star: '#FFD600',
+  buttun: {
+    primary: '#2979F6',
+    secondary: '#9C27B0',
+    disable: '#9D9D9D'
+  },
 };

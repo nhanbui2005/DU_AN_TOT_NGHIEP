@@ -9,6 +9,7 @@ export type AuthStackParamList = {
   Login: undefined;
   Register: undefined;
   ForgotPassword: undefined;
+  Verify: undefined;
 };
 
 export type AuthScreenProps = NativeStackScreenProps<AuthStackParamList>;
@@ -18,6 +19,8 @@ export type MainStackParamList = {
   Shop: undefined;
   Booking: undefined;
   Card: undefined;
+  Check: undefined;
+  Setting: undefined;
   Profile: undefined;
   // Add more screens here
 }; 
