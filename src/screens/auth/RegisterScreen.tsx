@@ -29,7 +29,8 @@ const RegisterScreen = () => {
     isSubmitting,
   } = useFormik({
     initialValues: {
-      fullName: "",
+      surName: "",
+      name: "",
       email: "",
       phone: "",
       password: "",
@@ -63,11 +64,20 @@ const RegisterScreen = () => {
       <Text style={styles.title}>Register</Text>
 
       <FormInput
-        label="Full Name"
-        value={values.fullName}
-        onChangeText={(text: string) => handleChange("fullName")(text)}
-        onBlur={() => handleBlur("fullName")}
-        error={touched.fullName ? errors.fullName : undefined}
+        label="Surname"
+        value={values.surName}
+        onChangeText={(text: string) => handleChange("surName")(text)}
+        onBlur={() => handleBlur("surName")}
+        error={touched.surName ? errors.surName : undefined}
+        placeholder="Enter your surname"
+      />
+
+      <FormInput
+        label="Name"
+        value={values.name}
+        onChangeText={(text: string) => handleChange("name")(text)}
+        onBlur={() => handleBlur("name")}
+        error={touched.name ? errors.name : undefined}
         placeholder="Enter your full name"
       />
 
@@ -128,7 +138,9 @@ const RegisterScreen = () => {
         secureTextEntry={secureConfirmText}
         placeholder="Confirm your password"
         rightIcon={
-          <TouchableOpacity onPress={() => setSecureConfirmText(!secureConfirmText)}>
+          <TouchableOpacity
+            onPress={() => setSecureConfirmText(!secureConfirmText)}
+          >
             <Image
               source={require("@/assets/icons/eye.png")}
               style={styles.icon}
@@ -137,7 +149,7 @@ const RegisterScreen = () => {
         }
       />
 
-      <TouchableOpacity 
+      <TouchableOpacity
         style={[styles.registerButton, isSubmitting && styles.buttonDisabled]}
         onPress={() => handleSubmit()}
         disabled={isSubmitting}

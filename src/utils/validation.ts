@@ -25,9 +25,12 @@ export const loginSchema = Yup.object().shape({
 });
 
 export const registerSchema = Yup.object().shape({
-  fullName: Yup.string()
-    .required('Full name is required')
-    .min(2, 'Full name must be at least 2 characters'),
+  surName: Yup.string()
+    .required('surname is required')
+    .min(2, 'surname must be at least 2 characters'),
+  name: Yup.string()
+    .required('name is required')
+    .min(2, 'name must be at least 2 characters'),
   email: Yup.string()
     .required('Email is required')
     .email('Invalid email format'),
