@@ -22,5 +22,7 @@ export type MainStackParamList = {
   Check: undefined;
   Setting: undefined;
   Profile: undefined;
+  User: undefined;
+  Addresses: undefined;
   // Add more screens here
 }; 
