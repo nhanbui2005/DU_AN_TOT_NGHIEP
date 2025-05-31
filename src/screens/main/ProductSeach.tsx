@@ -8,8 +8,6 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
-import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { MainStackParamList } from '../../navigation/types';
 import { colors } from '../../theme/colors';
 import { Typography } from '../../components/Typography';
 import { assets } from '../../theme/assets';
@@ -88,14 +86,12 @@ export const ProductSeach: React.FC = () => {
         </Typography>
       </View>
 
-
       <TextInput
         style={styles.searchInput}
         placeholder="Search in Pet Shop...."
         value={search}
         onChangeText={setSearch}
       />
-
 
       <View style={styles.filters}>
         <TouchableOpacity style={styles.filterButton}>
@@ -111,7 +107,6 @@ export const ProductSeach: React.FC = () => {
           <Text style={styles.dropdownText}>Rating</Text>
         </TouchableOpacity>
       </View>
-
 
       <FlatList
         data={products}

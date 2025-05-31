@@ -7,14 +7,12 @@ import {
     Image,
     TouchableOpacity,
     StyleSheet,
-} from 'react-native';
-import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { MainNavProp, MainStackParamList } from '../../navigation/types';
+} from 'react-native'
+import { MainNavProp } from '../../navigation/types';
 import { colors } from '../../theme/colors';
 import { Typography } from '../../components/Typography';
 import { assets } from '../../theme/assets';
 import { BORDER_RADIUS } from '../../theme/layout';
-import { sizes } from '../../theme';
 import { useNavigation } from '@react-navigation/native';
 
 const products = [

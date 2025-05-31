@@ -1,11 +1,13 @@
-import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
-import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { MainStackParamList } from '../../navigation/types';
-import { colors } from '../../theme/colors';
-import { Typography } from '../../components/Typography';
-
-type Props = BottomTabScreenProps<MainStackParamList, 'Check'>;
+import React from "react";
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+} from "react-native";
+import { colors } from "../../theme/colors";
+import { Typography } from "../../components/Typography";
 
 type OrderItem = {
   id: string;
@@ -18,20 +20,22 @@ type OrderItem = {
 
 const orderData: OrderItem[] = [
   {
-    id: '1',
-    name: 'Woven Semi Formal Blazer',
-    variant: 'Broken White',
+    id: "1",
+    name: "Woven Semi Formal Blazer",
+    variant: "Broken White",
     price: 874000,
     quantity: 1,
-    image: 'https://i.pinimg.com/236x/04/e6/34/04e634239b846c236975140a0811cf7c.jpg',
+    image:
+      "https://i.pinimg.com/236x/04/e6/34/04e634239b846c236975140a0811cf7c.jpg",
   },
   {
-    id: '2',
-    name: 'Gold Earring from EXECUTIVELY',
-    variant: '',
+    id: "2",
+    name: "Gold Earring from EXECUTIVELY",
+    variant: "",
     price: 400000,
     quantity: 2,
-    image: 'https://i.pinimg.com/236x/04/e6/34/04e634239b846c236975140a0811cf7c.jpg',
+    image:
+      "https://i.pinimg.com/236x/04/e6/34/04e634239b846c236975140a0811cf7c.jpg",
   },
 ];
 
@@ -56,16 +60,19 @@ export const CheckoutScreen = () => {
     </View>
   );
 
-  const subtotal = orderData.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const subtotal = orderData.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
   const shippingFee = 10000;
   const voucherDiscount = 20000;
   const total = subtotal + shippingFee - voucherDiscount;
 
   return (
     <View style={styles.container}>
-         <Typography variant="h4" style={styles.header}>
-                    Check Out
-                  </Typography>
+      <Typography variant="h4" style={styles.header}>
+        Check Out
+      </Typography>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Order Summary */}
         <View style={styles.section}>
@@ -82,13 +89,15 @@ export const CheckoutScreen = () => {
           </Typography>
           <TouchableOpacity style={styles.optionContainer}>
             <View style={styles.optionDetails}>
-              <Typography variant="body1">Jean Doe • (+62 812 3456 7890)</Typography>
+              <Typography variant="body1">
+                Jean Doe • (+62 812 3456 7890)
+              </Typography>
               <Typography variant="caption" style={styles.optionText}>
                 Maxie Orchard 35858 Block 2, Kertzmanfort, Wyoming, 75926-5541
               </Typography>
             </View>
             <Typography variant="body2" style={styles.optionArrow}>
-              {'>'}
+              {">"}
             </Typography>
           </TouchableOpacity>
         </View>
@@ -106,7 +115,7 @@ export const CheckoutScreen = () => {
               </Typography>
             </View>
             <Typography variant="body2" style={styles.optionArrow}>
-              {'>'}
+              {">"}
             </Typography>
           </TouchableOpacity>
         </View>
@@ -121,7 +130,7 @@ export const CheckoutScreen = () => {
               <Typography variant="body1">BANK Virtual Account</Typography>
             </View>
             <Typography variant="body2" style={styles.optionArrow}>
-              {'>'}
+              {">"}
             </Typography>
           </TouchableOpacity>
         </View>
@@ -142,11 +151,15 @@ export const CheckoutScreen = () => {
         <View style={styles.section}>
           <View style={styles.subtotalRow}>
             <Typography variant="body1">Subtotal</Typography>
-            <Typography variant="body1">Rp{subtotal.toLocaleString()}</Typography>
+            <Typography variant="body1">
+              Rp{subtotal.toLocaleString()}
+            </Typography>
           </View>
           <View style={styles.subtotalRow}>
             <Typography variant="body1">Shipping Fee</Typography>
-            <Typography variant="body1">Rp{shippingFee.toLocaleString()}</Typography>
+            <Typography variant="body1">
+              Rp{shippingFee.toLocaleString()}
+            </Typography>
           </View>
           <View style={styles.subtotalRow}>
             <Typography variant="body1">Admin Fee</Typography>
@@ -200,7 +213,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   orderItemContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: 16,
   },
   orderItemImage: {
@@ -218,16 +231,16 @@ const styles = StyleSheet.create({
   },
   priceText: {
     color: colors.text.primary,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   quantityText: {
     color: colors.text.secondary,
     marginTop: 4,
   },
   optionContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   optionDetails: {
     flex: 1,
@@ -241,9 +254,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   voucherContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: 8,
     backgroundColor: colors.background.light,
     borderRadius: 8,
@@ -252,24 +265,24 @@ const styles = StyleSheet.create({
     color: colors.error,
   },
   subtotalRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginVertical: 4,
   },
   totalRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 16,
   },
   totalText: {
     color: colors.text.primary,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   discountText: {
     color: colors.error,
   },
   footer: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
@@ -282,10 +295,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background.paper,
     paddingVertical: 12,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
   },
   createOrderText: {
     color: colors.text.primary,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });

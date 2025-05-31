@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
 import { View, StyleSheet , TouchableOpacity, Image} from 'react-native';
-import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { MainNavProp, MainStackParamList } from '../../navigation/types';
+import { MainNavProp } from '../../navigation/types';
 import { colors } from '../../theme/colors';
 import { Typography } from '../../components/Typography';
 import { FlashList } from '@shopify/flash-list';
 import { useNavigation } from '@react-navigation/native';
-
-type Props = BottomTabScreenProps<MainStackParamList, 'Card'>;
 
 type CartItem = {
   id: string;
@@ -15,8 +12,8 @@ type CartItem = {
   color: string;
   price: number;
   quantity: number;
-  image: string; // Giả sử bạn có URL hình ảnh
-  selected: boolean; // Thêm thuộc tính để theo dõi trạng thái checkbox
+  image: string;
+  selected: boolean;
 };
 
 

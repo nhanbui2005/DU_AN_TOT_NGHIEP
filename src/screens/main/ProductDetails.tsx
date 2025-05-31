@@ -8,8 +8,7 @@ import {
     ScrollView,
     FlatList
 } from 'react-native';
-import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { MainNavProp, MainStackParamList } from '../../navigation/types';
+import { MainNavProp } from '../../navigation/types';
 import { colors } from '../../theme/colors';
 import { assets } from '../../theme/assets';
 import { BORDER_RADIUS } from '../../theme/layout';

@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from './types';
 import { AuthRouter } from './AuthRouter';
-import { MainRouter } from './MainRouter';
+import MainNavigator from './MainNavigation';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -17,7 +17,7 @@ export const AppRouter = () => {
         {!isAuthenticated ? (
           <Stack.Screen name="Auth" component={AuthRouter} />
         ) : (
-          <Stack.Screen name="Main" component={MainRouter} />
+          <Stack.Screen name="Main" component={MainNavigator} />
         )}
       </Stack.Navigator>
     </NavigationContainer>

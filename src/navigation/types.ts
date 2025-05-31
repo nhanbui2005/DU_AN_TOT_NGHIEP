@@ -30,6 +30,7 @@ export type MainStackParamList = {
 };
 
 export type MainNavProp = NativeStackNavigationProp<MainStackParamList, 'Main'>;
+export type AuthNavProp = NativeStackNavigationProp<AuthStackParamList, 'Login'>;
 
 export const PageNames = {
   Main: 'Main',
