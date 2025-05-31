@@ -17,7 +17,7 @@ type Props = BottomTabScreenProps<MainStackParamList, 'User'>;
 export const UserScreen = ({ navigation }: Props) => {
   return (
     <ScrollView style={styles.container}>
-      {/* Header */}
+      
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Image source={assets.icons.user.back} style={styles.backIcon} />
@@ -25,14 +25,13 @@ export const UserScreen = ({ navigation }: Props) => {
         <Typography style={styles.headerTitle}>User</Typography>
       </View>
 
-      {/* User Information */}
       <View style={styles.userInfoContainer}>
         <Image
           source={require('../../../assets/icons/image 1.png')}
           style={styles.avatar}
         />
 
-        {/* Nút đổi avatar */}
+       
         <TouchableOpacity style={styles.changeAvatarButton} onPress={() => console.log('Đổi ảnh')}>
           <Typography style={styles.changeAvatarText}>Thay đổi ảnh</Typography>
         </TouchableOpacity>
