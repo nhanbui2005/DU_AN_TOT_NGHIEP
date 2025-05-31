@@ -9,14 +9,16 @@ import {
     FlatList
 } from 'react-native';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { MainStackParamList } from '../../navigation/types';
+import { MainNavProp, MainStackParamList } from '../../navigation/types';
 import { colors } from '../../theme/colors';
 import { assets } from '../../theme/assets';
 import { BORDER_RADIUS } from '../../theme/layout';
+import { useNavigation } from '@react-navigation/native';
 
-type Props = BottomTabScreenProps<MainStackParamList, 'Home'>;
 
 export const ProductDetails = () => {
+      const mainNav = useNavigation<MainNavProp>();
+    
     const [selectedSize, setSelectedSize] = useState('M');
     const [selectedColor, setSelectedColor] = useState('Broken White');
     const [quantity, setQuantity] = useState(1);
@@ -40,7 +42,7 @@ export const ProductDetails = () => {
                         source={{ uri: 'https://www.lottemart.vn/media/catalog/product/cache/0x0/8/8/8853301130974.jpg.webp' }}
                         style={styles.image}
                     />
-                    <TouchableOpacity style={styles.backButton}>
+                    <TouchableOpacity style={styles.backButton} onPress={()=>mainNav.goBack()}>
                         <Image source={assets.icons.back} />
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.heartButton}>

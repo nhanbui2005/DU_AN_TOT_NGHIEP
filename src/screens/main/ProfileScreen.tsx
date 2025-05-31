@@ -12,9 +12,7 @@ import { Typography } from '../../components/Typography';
 import { assets } from '../../theme/assets';
 import { colors } from '../../theme';
 
-type Props = BottomTabScreenProps<MainStackParamList, 'Profile'>;
-
-export const ProfileScreen = ({ navigation }: Props) => {
+export const ProfileScreen = () => {
   const groupedMenuItems = [
     [
       {
@@ -69,7 +67,7 @@ export const ProfileScreen = ({ navigation }: Props) => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity style={styles.backButton}>
           <Image source={assets.icons.back} style={styles.backIcon} />
         </TouchableOpacity>
         <Typography variant="h4" style={styles.headerTitle}>Profile</Typography>

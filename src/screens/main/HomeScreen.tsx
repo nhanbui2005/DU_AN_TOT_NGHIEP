@@ -10,12 +10,11 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { MainStackParamList } from '../../navigation/types';
+import { MainNavProp, MainStackParamList, PageNames } from '../../navigation/types';
 import { colors } from '../../theme/colors';
 import { assets } from '../../theme/assets';
 import { Fonts } from '@/src/theme/fonts';
-
-type Props = BottomTabScreenProps<MainStackParamList, 'Home'>;
+import { useNavigation } from '@react-navigation/native';
 
 const popularProducts = [
   {
@@ -48,7 +47,8 @@ const popularProducts = [
   },
 ];
 
-export const HomeScreen = ({}: Props) => {
+export const HomeScreen = () => {
+  const mainNav = useNavigation<MainNavProp>();
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -57,14 +57,20 @@ export const HomeScreen = ({}: Props) => {
           style={styles.logo}
         />
         <View style={styles.headerIcons}>
+          <TouchableOpacity onPress={()=>mainNav.navigate('Notification')}>
           <Image
             source={assets.icons.homeScreen.bell} 
             style={styles.headerIcon}
           />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={()=>mainNav.navigate('CartScreen')}>
+
           <Image
             source={assets.icons.homeScreen.cart} 
             style={styles.headerIcon}
           />
+                    </TouchableOpacity>
+
         </View>
       </View>
 
@@ -102,11 +108,13 @@ export const HomeScreen = ({}: Props) => {
       <FlatList
         data={popularProducts}
         numColumns={2}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id}  
         contentContainerStyle={{ paddingHorizontal: 12 }}
         columnWrapperStyle={{ justifyContent: 'space-between', marginBottom: 12 }}
         renderItem={({ item }) => (
-          <View style={styles.productCard}>
+          <TouchableOpacity style={styles.productCard} 
+          onPress={() => mainNav.navigate('ProductDetail')}
+          >
             <Image source={item.image} style={styles.productImage} />
             <View style={styles.starRow}>
               {[...Array(item.rating)].map((_, i) => (
@@ -126,7 +134,7 @@ export const HomeScreen = ({}: Props) => {
                 style={styles.plusIcon}
               />
             </TouchableOpacity>
-          </View>
+          </TouchableOpacity>
         )}
       />
 
