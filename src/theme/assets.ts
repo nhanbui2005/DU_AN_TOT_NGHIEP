@@ -1,7 +1,7 @@
 
 export const assets = {
   icons: {
-    demo_icon: require("../../assets/icons/demo-icon.png"),
+    // demo_icon: require("../../assets/icons/demo-icon.png"),
     back: require("../../assets/icons/back.png"),
     bottomTab: {
       home: {
@@ -35,6 +35,7 @@ export const assets = {
       house: require("../../assets/icons/house.png"),
     },
     profileScreen: {
+      
       user: require("../../assets/icons/user.png"),
       adderss: require("../../assets/icons/adderss.png"),
       card: require("../../assets/icons/card.png"),
@@ -53,10 +54,13 @@ export const assets = {
       linear: require("../../assets/icons/stylelinear.png"),
       Stylelinearplusss: require("../../assets/icons/Stylelinearplusss.png"),
     },
+    user: {
+      back: require("../../assets/icons/back.png"),
+    }
   },
 
   images: {
-    demo_image: require("../../assets/images/demo-image.png"),
+    // demo_image: require("../../assets/images/demo-image.png"),
     logo: require("../../assets/icons/logo.png"),
     image: require("../../assets/icons/image 1.png"),
     Google: require("../../assets/icons/Google.png"),

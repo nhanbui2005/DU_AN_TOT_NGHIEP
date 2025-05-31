@@ -5,17 +5,14 @@ import { BORDER_RADIUS, SPACING } from "../../theme/layout";
 import { useNavigation } from "@react-navigation/native";
 import { colors } from "@/src/theme";
 import { typography } from "@/src/theme";
-import { assets } from "@/src/theme/assets";
 import { useFormik } from "formik";
 import { forgotPasswordSchema } from "../../utils/validation";
 import authApi from "../../api/auth";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { AuthStackParamList } from "../../navigation/types";
+import { AuthNavProp, PageNames } from "@/src/navigation/types";
 
-type ForgotPasswordNavigationProp = NativeStackNavigationProp<AuthStackParamList, "ForgotPassword">;
 
 const ForgotPassword = () => {
-  const navigation = useNavigation<ForgotPasswordNavigationProp>();
+  const authNav = useNavigation<AuthNavProp>();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
@@ -34,7 +31,7 @@ const ForgotPassword = () => {
       try {
         setIsSubmitting(true);
         await authApi.forgotPassword(values);
-        navigation.navigate("Verify", { phone: values.phone });
+        authNav.navigate(PageNames.Verify, {phone: values.phone})
       } catch (error: any) {
         Alert.alert(
           "Error",
@@ -48,7 +45,7 @@ const ForgotPassword = () => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+      <TouchableOpacity style={styles.backButton} onPress={() => authNav.goBack()}>
         <Image source={require("@/assets/icons/Vector9.png")} />
       </TouchableOpacity>
 

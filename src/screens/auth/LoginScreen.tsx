@@ -2,7 +2,7 @@ import { useState } from "react";
 import { View, StyleSheet, Text, TouchableOpacity, Image, Alert } from "react-native";
 import { useNavigation, CommonActions } from "@react-navigation/native";
 import { FormInput } from "../../components/Form/FormInput";
-import { BORDER_RADIUS, LAYOUT, SPACING } from "../../theme/layout";
+import { BORDER_RADIUS, SPACING } from "../../theme/layout";
 import { colors } from "@/src/theme";
 import { typography } from "@/src/theme";
 import { assets } from "@/src/theme/assets";
@@ -10,13 +10,10 @@ import { useFormik } from "formik";
 import { loginSchema } from "../../utils/validation";
 import authApi from "../../api/auth";
 import { useAuth } from "../../hooks/useAuth";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { AuthStackParamList } from "../../navigation/types";
-
-type LoginScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, "Login">;
+import { AuthNavProp, PageNames } from "../../navigation/types";
 
 const LoginScreen = () => {
-  const navigation = useNavigation<LoginScreenNavigationProp>();
+  const authNav = useNavigation<AuthNavProp>();
   const [secureText, setSecureText] = useState(true);
   const { login } = useAuth();
 
@@ -38,7 +35,7 @@ const LoginScreen = () => {
       try {
         const response = await authApi.login(values);
         login(response.token);
-        navigation.dispatch(
+        authNav.dispatch(
           CommonActions.reset({
             index: 0,
             routes: [{ name: "Main" }],
@@ -94,7 +91,7 @@ const LoginScreen = () => {
         }
       />
 
-      <TouchableOpacity style={styles.forgot} onPress={() => navigation.navigate("ForgotPassword")}>
+      <TouchableOpacity style={styles.forgot} onPress={() => authNav.navigate(PageNames.ForgotPassword)}>
         <Text style={styles.forgotText}>forgot password?</Text>
       </TouchableOpacity>
 
@@ -110,7 +107,7 @@ const LoginScreen = () => {
 
       <View style={styles.signupRow}>
         <Text style={styles.signupText}>Don't have an account? </Text>
-        <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+        <TouchableOpacity onPress={() => authNav.navigate(PageNames.Register)}>
           <Text style={styles.signupLink}>Sign Up</Text>
         </TouchableOpacity>
       </View>

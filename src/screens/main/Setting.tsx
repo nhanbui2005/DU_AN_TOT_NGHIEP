@@ -1,15 +1,14 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native'; // Thêm Alert
+import { View, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { colors } from '../../theme/colors';
 import { Typography } from '../../components/Typography';
-import { MainStackParamList } from '../../navigation/types'; // Import từ file types
+import { MainNavProp, MainStackParamList, PageNames } from '../../navigation/types';
 
-type NavigationProp = StackNavigationProp<MainStackParamList, 'Setting'>;
 
 export const AccountSettingsScreen = () => {
-  const navigation = useNavigation<NavigationProp>();
+  const mainNav = useNavigation<MainNavProp>();
 
   const menuItems = [
     { title: 'Tài khoản của tôi', onPress: () => {} },
@@ -32,7 +31,7 @@ export const AccountSettingsScreen = () => {
   const handleLogout = () => {
     Alert.alert('Đăng xuất', 'Bạn có chắc muốn đăng xuất?', [
       { text: 'Hủy', style: 'cancel' },
-      { text: 'Đăng xuất', onPress: () => navigation.navigate('Check') }, // Bây giờ Check đã có trong MainStackParamList
+      { text: 'Đăng xuất', onPress: () => mainNav.navigate(PageNames.Check) },
     ]);
   };
 
@@ -41,7 +40,7 @@ export const AccountSettingsScreen = () => {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity onPress={() => mainNav.goBack()}>
             <Typography variant="body1" style={styles.backButton}>
               {'<'}
             </Typography>

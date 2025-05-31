@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { View, StyleSheet , TouchableOpacity, Image} from 'react-native';
-import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { MainStackParamList } from '../../navigation/types';
+import { MainNavProp } from '../../navigation/types';
 import { colors } from '../../theme/colors';
 import { Typography } from '../../components/Typography';
 import { FlashList } from '@shopify/flash-list';
-
-type Props = BottomTabScreenProps<MainStackParamList, 'Card'>;
+import { useNavigation } from '@react-navigation/native';
 
 type CartItem = {
   id: string;
@@ -14,8 +12,8 @@ type CartItem = {
   color: string;
   price: number;
   quantity: number;
-  image: string; // Giả sử bạn có URL hình ảnh
-  selected: boolean; // Thêm thuộc tính để theo dõi trạng thái checkbox
+  image: string;
+  selected: boolean;
 };
 
 
@@ -49,6 +47,8 @@ const initialCartData: CartItem[] = [
   },
 ];
 export const CardScreen = () => {
+    const mainNav = useNavigation<MainNavProp>();
+  
   const [cartData, setCartData] = useState<CartItem[]>(initialCartData);
 
   // Hàm xử lý khi checkbox được nhấn
@@ -142,7 +142,7 @@ export const CardScreen = () => {
         <Typography variant="body1" style={styles.totalText}>
           {selectedItems.length} selected • Rp{totalPrice.toLocaleString()}
         </Typography>
-        <TouchableOpacity style={styles.checkoutButton}>
+        <TouchableOpacity onPress={()=>mainNav.navigate('CheckoutScreen')} style={styles.checkoutButton}>
           <Typography variant="body1" style={styles.checkoutText}>
             Check Out
           </Typography>
