@@ -59,7 +59,7 @@ export const ProfileScreen = ({ navigation }: Props) => {
       },
       {
         id: '7',
-        title: 'Settings',
+        title: 'Đăng xuất',
         icon: assets.icons.profileScreen.setting,
         color:colors.white,
       },
