@@ -99,6 +99,7 @@ interface FormInputProps {
   numberOfLines?: number;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
+  maxLength?: number;
 }
 
 export const FormInput = (props: FormInputProps) => {
@@ -117,6 +118,7 @@ export const FormInput = (props: FormInputProps) => {
     numberOfLines = 1,
     leftIcon,
     rightIcon,
+    maxLength,
   } = props ?? {};
 
   return (
@@ -143,6 +145,7 @@ export const FormInput = (props: FormInputProps) => {
           autoCapitalize={autoCapitalize}
           multiline={multiline}
           numberOfLines={numberOfLines}
+          maxLength={maxLength}
         />
 
         {rightIcon && <View style={styles.rightIcon}>{rightIcon}</View>}

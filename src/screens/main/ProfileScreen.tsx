@@ -70,7 +70,7 @@ export const ProfileScreen = ({ navigation }: Props) => {
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Image source={assets.icons.user.back} style={styles.backIcon} />
+          <Image source={assets.icons.back} style={styles.backIcon} />
         </TouchableOpacity>
         <Typography variant="h4" style={styles.headerTitle}>Profile</Typography>
       </View>

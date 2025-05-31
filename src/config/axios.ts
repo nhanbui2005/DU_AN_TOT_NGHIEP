@@ -9,7 +9,7 @@ import { storageHelper } from './storage';
 import { ErrorHandler, APIErrorCode } from '../types/error';
 
 // Base URL configuration
-const BASE_URL = Platform.select({
+export const BASE_URL = Platform.select({
   ios: 'http://localhost:3000/api',
   android: 'http://10.0.2.2:3000/api',
   default: 'http://localhost:3000/api',
@@ -59,7 +59,7 @@ axiosInstance.interceptors.response.use(
     if (error.response?.status === 401 && originalRequest) {
       try {
         // Get refresh token from MMKV
-        const refreshToken = storageHelper.getRefreshToken();
+        const refreshToken = await storageHelper.getRefreshToken();
         
         if (refreshToken) {
           // Call refresh token API

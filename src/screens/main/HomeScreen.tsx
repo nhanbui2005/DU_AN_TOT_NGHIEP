@@ -13,6 +13,7 @@ import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { MainStackParamList } from '../../navigation/types';
 import { colors } from '../../theme/colors';
 import { assets } from '../../theme/assets';
+import { Fonts } from '@/src/theme/fonts';
 
 type Props = BottomTabScreenProps<MainStackParamList, 'Home'>;
 
@@ -212,13 +213,15 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   bannerTitle: {
-    fontWeight: 'bold',
     fontSize: 14,
+    fontFamily: Fonts.roboto.bold,
     marginBottom: 4,
   },
   bannerSubtitle: {
     fontSize: 12,
     marginBottom: 6,
+    fontFamily: Fonts.roboto.regular,
+
   },
   bannerImage: {
     width: 87,

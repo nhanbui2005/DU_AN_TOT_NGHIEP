@@ -5,6 +5,7 @@ import { store, persistor } from './src/store/store';
 import { AppRouter } from './src/navigation/AppRouter';
 
 export default function App() {
+
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>

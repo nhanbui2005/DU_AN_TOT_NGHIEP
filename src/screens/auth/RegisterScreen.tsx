@@ -1,21 +1,24 @@
-import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, ScrollView, GestureResponderEvent } from 'react-native';
-import { useForm } from '../../hooks/common/useForm';
-import { registerSchema } from '../../utils/validation';
-import { FormInput } from '../../components/Form/FormInput';
-import { LAYOUT, SPACING } from '../../theme/layout';
-import { colors } from '../../theme/colors';
-import { AuthScreenProps } from '../../navigation/types';
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, Image, StyleSheet, Alert } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { FormInput } from "../../components/Form/FormInput";
+import { SPACING, BORDER_RADIUS } from "../../theme/layout";
+import { colors } from "@/src/theme";
+import { typography } from "@/src/theme";
+import { assets } from "@/src/theme/assets";
+import { useFormik } from "formik";
+import { registerSchema } from "../../utils/validation";
+import authApi from "../../api/auth";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { AuthStackParamList } from "../../navigation/types";
 
-type RegisterFormValues = {
-  fullName: string;
-  email: string;
-  phone: string;
-  password: string;
-  confirmPassword: string;
-};
+type RegisterScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, "Register">;
 
-export const RegisterScreen = ({ navigation }: AuthScreenProps) => {
+const RegisterScreen = () => {
+  const navigation = useNavigation<RegisterScreenNavigationProp>();
+  const [secureText, setSecureText] = useState(true);
+  const [secureConfirmText, setSecureConfirmText] = useState(true);
+
   const {
     values,
     errors,
@@ -24,157 +27,209 @@ export const RegisterScreen = ({ navigation }: AuthScreenProps) => {
     handleBlur,
     handleSubmit,
     isSubmitting,
-  } = useForm<RegisterFormValues>({
+  } = useFormik({
     initialValues: {
-      fullName: '',
-      email: '',
-      phone: '',
-      password: '',
-      confirmPassword: '',
+      surName: "",
+      name: "",
+      email: "",
+      phone: "",
+      password: "",
+      confirmPassword: "",
     },
     validationSchema: registerSchema,
-    onSubmit: (values) => {
-      // TODO: Implement register logic
-      console.log('Register values:', values);
+    onSubmit: async (values) => {
+      try {
+        await authApi.register(values);
+        Alert.alert(
+          "Registration Successful",
+          "Please check your email to verify your account",
+          [
+            {
+              text: "OK",
+              onPress: () => navigation.navigate("Login"),
+            },
+          ]
+        );
+      } catch (error: any) {
+        Alert.alert(
+          "Registration Failed",
+          error.response?.data?.message || "Please try again later"
+        );
+      }
     },
   });
 
-  const handleSubmitPress = (e: GestureResponderEvent) => {
-    e.preventDefault();
-    handleSubmit();
-  };
-
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Đăng ký</Text>
-        <Text style={styles.subtitle}>Tạo tài khoản mới</Text>
-      </View>
+    <View style={styles.container}>
+      <Text style={styles.title}>Register</Text>
 
-      <View style={styles.form}>
-        <FormInput
-          label="Họ và tên"
-          value={values.fullName}
-          onChangeText={handleChange('fullName')}
-          onBlur={() => handleBlur('fullName')}
-          error={errors.fullName}
-          touched={touched.fullName}
-          placeholder="Nhập họ và tên của bạn"
-        />
+      <FormInput
+        label="Surname"
+        value={values.surName}
+        onChangeText={(text: string) => handleChange("surName")(text)}
+        onBlur={() => handleBlur("surName")}
+        error={touched.surName ? errors.surName : undefined}
+        placeholder="Enter your surname"
+      />
 
-        <FormInput
-          label="Email"
-          value={values.email}
-          onChangeText={handleChange('email')}
-          onBlur={() => handleBlur('email')}
-          error={errors.email}
-          touched={touched.email}
-          placeholder="Nhập email của bạn"
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
+      <FormInput
+        label="Name"
+        value={values.name}
+        onChangeText={(text: string) => handleChange("name")(text)}
+        onBlur={() => handleBlur("name")}
+        error={touched.name ? errors.name : undefined}
+        placeholder="Enter your full name"
+      />
 
-        <FormInput
-          label="Số điện thoại"
-          value={values.phone}
-          onChangeText={handleChange('phone')}
-          onBlur={() => handleBlur('phone')}
-          error={errors.phone}
-          touched={touched.phone}
-          placeholder="Nhập số điện thoại của bạn"
-          keyboardType="phone-pad"
-        />
+      <FormInput
+        label="Email"
+        value={values.email}
+        onChangeText={(text: string) => handleChange("email")(text)}
+        onBlur={() => handleBlur("email")}
+        error={touched.email ? errors.email : undefined}
+        keyboardType="email-address"
+        placeholder="Enter your email"
+        autoCapitalize="none"
+      />
 
-        <FormInput
-          label="Mật khẩu"
-          value={values.password}
-          onChangeText={handleChange('password')}
-          onBlur={() => handleBlur('password')}
-          error={errors.password}
-          touched={touched.password}
-          placeholder="Nhập mật khẩu của bạn"
-          secureTextEntry
-        />
+      <FormInput
+        label="Phone Number"
+        value={values.phone}
+        onChangeText={(text: string) => handleChange("phone")(text)}
+        onBlur={() => handleBlur("phone")}
+        error={touched.phone ? errors.phone : undefined}
+        keyboardType="phone-pad"
+        placeholder="Enter your phone number"
+        leftIcon={
+          <View style={styles.prefixContainer}>
+            <Text style={styles.prefixText}>+91</Text>
+            <Image
+              source={require("@/assets/icons/tick.png")}
+              style={styles.arrowIcon}
+            />
+          </View>
+        }
+      />
 
-        <FormInput
-          label="Xác nhận mật khẩu"
-          value={values.confirmPassword}
-          onChangeText={handleChange('confirmPassword')}
-          onBlur={() => handleBlur('confirmPassword')}
-          error={errors.confirmPassword}
-          touched={touched.confirmPassword}
-          placeholder="Nhập lại mật khẩu của bạn"
-          secureTextEntry
-        />
-
-        <TouchableOpacity
-          style={[styles.button, isSubmitting && styles.buttonDisabled]}
-          onPress={handleSubmitPress}
-          disabled={isSubmitting}
-        >
-          <Text style={styles.buttonText}>
-            {isSubmitting ? 'Đang đăng ký...' : 'Đăng ký'}
-          </Text>
-        </TouchableOpacity>
-
-        <View style={styles.loginContainer}>
-          <Text style={styles.loginText}>Đã có tài khoản? </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-            <Text style={styles.loginLink}>Đăng nhập</Text>
+      <FormInput
+        label="Password"
+        value={values.password}
+        onChangeText={(text: string) => handleChange("password")(text)}
+        onBlur={() => handleBlur("password")}
+        error={touched.password ? errors.password : undefined}
+        secureTextEntry={secureText}
+        placeholder="Enter your password"
+        rightIcon={
+          <TouchableOpacity onPress={() => setSecureText(!secureText)}>
+            <Image
+              source={require("@/assets/icons/eye.png")}
+              style={styles.icon}
+            />
           </TouchableOpacity>
-        </View>
+        }
+      />
+
+      <FormInput
+        label="Confirm Password"
+        value={values.confirmPassword}
+        onChangeText={(text: string) => handleChange("confirmPassword")(text)}
+        onBlur={() => handleBlur("confirmPassword")}
+        error={touched.confirmPassword ? errors.confirmPassword : undefined}
+        secureTextEntry={secureConfirmText}
+        placeholder="Confirm your password"
+        rightIcon={
+          <TouchableOpacity
+            onPress={() => setSecureConfirmText(!secureConfirmText)}
+          >
+            <Image
+              source={require("@/assets/icons/eye.png")}
+              style={styles.icon}
+            />
+          </TouchableOpacity>
+        }
+      />
+
+      <TouchableOpacity
+        style={[styles.registerButton, isSubmitting && styles.buttonDisabled]}
+        onPress={() => handleSubmit()}
+        disabled={isSubmitting}
+      >
+        <Text style={styles.registerText}>
+          {isSubmitting ? "Registering..." : "Register"}
+        </Text>
+      </TouchableOpacity>
+
+      <View style={styles.loginContainer}>
+        <Text style={styles.loginText}>Already have an account? </Text>
+        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+          <Text style={styles.loginLink}>Login</Text>
+        </TouchableOpacity>
       </View>
-    </ScrollView>
+    </View>
   );
 };
+
+export default RegisterScreen;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background.default,
-  },
-  header: {
     padding: SPACING.L,
-    paddingTop: SPACING.XL,
   },
   title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: colors.text.primary,
-    marginBottom: SPACING.XS,
+    fontSize: typography.fontSize["3xl"],
+    fontWeight: "700",
+    alignSelf: "center",
+    marginBottom: SPACING.XL,
   },
-  subtitle: {
-    fontSize: 16,
-    color: colors.text.secondary,
+  prefixContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginRight: SPACING.S,
   },
-  form: {
-    padding: SPACING.L,
+  prefixText: {
+    fontSize: typography.fontSize.md,
+    color: colors.black,
+    marginRight: SPACING.XS,
   },
-  button: {
-    ...LAYOUT.BUTTON,
-    ...LAYOUT.BUTTON_PRIMARY,
-    marginBottom: SPACING.M,
+  arrowIcon: {
+    width: 12,
+    height: 8,
+    marginLeft: SPACING.XS,
+  },
+  icon: {
+    width: 23,
+    height: 15,
+    tintColor: colors.black,
+  },
+  registerButton: {
+    backgroundColor: colors.buttun.primary,
+    borderRadius: BORDER_RADIUS.M,
+    paddingVertical: SPACING.M,
+    alignItems: "center",
+    marginTop: SPACING.L,
   },
   buttonDisabled: {
-    ...LAYOUT.BUTTON_DISABLED,
+    opacity: 0.7,
   },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
+  registerText: {
+    color: colors.white,
+    fontSize: typography.fontSize.md,
+    fontWeight: "700",
   },
   loginContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: SPACING.M,
   },
   loginText: {
-    color: colors.text.secondary,
-    fontSize: 14,
+    color: colors.grey[600],
+    fontSize: typography.fontSize.sm,
   },
   loginLink: {
-    color: colors.blue.main,
-    fontSize: 14,
-    fontWeight: '600',
+    color: colors.black,
+    fontWeight: "700",
+    fontSize: typography.fontSize.sm,
   },
-}); 
+});

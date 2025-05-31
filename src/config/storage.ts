@@ -1,4 +1,4 @@
-import { MMKV } from 'react-native-mmkv';
+import * as SecureStore from 'expo-secure-store';
 
 export const STORAGE_KEYS = {
   AUTH: '@auth',
@@ -9,43 +9,45 @@ export const STORAGE_KEYS = {
   FAVORITES: '@favorites',
 } as const;
 
-export const storage = new MMKV({
-  id: 'app-storage',
-  encryptionKey: 'your-encryption-key'
-});
-
 export const storageHelper = {
   // Token functions
-  setAccessToken: (token: string) => {
-    storage.set(STORAGE_KEYS.TOKEN, token);
+  setAccessToken: async (token: string) => {
+    await SecureStore.setItemAsync(STORAGE_KEYS.TOKEN, token);
   },
-  getAccessToken: () => {
-    return storage.getString(STORAGE_KEYS.TOKEN);
+  getAccessToken: async () => {
+    return await SecureStore.getItemAsync(STORAGE_KEYS.TOKEN);
   },
-  setRefreshToken: (token: string) => {
-    storage.set(STORAGE_KEYS.TOKEN, token);
+  setRefreshToken: async (token: string) => {
+    await SecureStore.setItemAsync(STORAGE_KEYS.TOKEN, token);
   },
-  getRefreshToken: () => {
-    return storage.getString(STORAGE_KEYS.TOKEN);
+  getRefreshToken: async () => {
+    return await SecureStore.getItemAsync(STORAGE_KEYS.TOKEN);
   },
-  clearTokens: () => {
-    storage.delete(STORAGE_KEYS.TOKEN);
+  clearTokens: async () => {
+    await SecureStore.deleteItemAsync(STORAGE_KEYS.TOKEN);
   },
 
   // User data functions
-  setUserData: (data: any) => {
-    storage.set(STORAGE_KEYS.USER, JSON.stringify(data));
+  setUserData: async (data: any) => {
+    await SecureStore.setItemAsync(STORAGE_KEYS.USER, JSON.stringify(data));
   },
-  getUserData: () => {
-    const data = storage.getString(STORAGE_KEYS.USER);
+  getUserData: async () => {
+    const data = await SecureStore.getItemAsync(STORAGE_KEYS.USER);
     return data ? JSON.parse(data) : null;
   },
-  clearUserData: () => {
-    storage.delete(STORAGE_KEYS.USER);
+  clearUserData: async () => {
+    await SecureStore.deleteItemAsync(STORAGE_KEYS.USER);
   },
 
-  // Clear all data
-  clearAll: () => {
-    storage.clearAll();
+  // Clear all data (delete all keys)
+  clearAll: async () => {
+    await Promise.all([
+      SecureStore.deleteItemAsync(STORAGE_KEYS.TOKEN),
+      SecureStore.deleteItemAsync(STORAGE_KEYS.USER),
+      SecureStore.deleteItemAsync(STORAGE_KEYS.AUTH),
+      SecureStore.deleteItemAsync(STORAGE_KEYS.SETTINGS),
+      SecureStore.deleteItemAsync(STORAGE_KEYS.CART),
+      SecureStore.deleteItemAsync(STORAGE_KEYS.FAVORITES),
+    ]);
   },
 }; 

@@ -1,18 +1,25 @@
-import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, GestureResponderEvent } from 'react-native';
-import { useForm } from '../../hooks/common/useForm';
-import { loginSchema } from '../../utils/validation';
-import { FormInput } from '../../components/Form/FormInput';
-import { LAYOUT, SPACING } from '../../theme/layout';
-import { colors } from '../../theme/colors';
-import { AuthScreenProps } from '../../navigation/types';
+import { useState } from "react";
+import { View, StyleSheet, Text, TouchableOpacity, Image, Alert } from "react-native";
+import { useNavigation, CommonActions } from "@react-navigation/native";
+import { FormInput } from "../../components/Form/FormInput";
+import { BORDER_RADIUS, LAYOUT, SPACING } from "../../theme/layout";
+import { colors } from "@/src/theme";
+import { typography } from "@/src/theme";
+import { assets } from "@/src/theme/assets";
+import { useFormik } from "formik";
+import { loginSchema } from "../../utils/validation";
+import authApi from "../../api/auth";
+import { useAuth } from "../../hooks/useAuth";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { AuthStackParamList } from "../../navigation/types";
 
-type LoginFormValues = {
-  email: string;
-  password: string;
-};
+type LoginScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, "Login">;
 
-export const LoginScreen = ({ navigation }: AuthScreenProps) => {
+const LoginScreen = () => {
+  const navigation = useNavigation<LoginScreenNavigationProp>();
+  const [secureText, setSecureText] = useState(true);
+  const { login } = useAuth();
+
   const {
     values,
     errors,
@@ -21,137 +28,222 @@ export const LoginScreen = ({ navigation }: AuthScreenProps) => {
     handleBlur,
     handleSubmit,
     isSubmitting,
-  } = useForm<LoginFormValues>({
+  } = useFormik({
     initialValues: {
-      email: '',
-      password: '',
+      phone: "",
+      password: "",
     },
     validationSchema: loginSchema,
-    onSubmit: (values) => {
-      // TODO: Implement login logic
-      console.log('Login values:', values);
+    onSubmit: async (values) => {
+      try {
+        const response = await authApi.login(values);
+        login(response.token);
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: "Main" }],
+          })
+        );
+      } catch (error: any) {
+        Alert.alert(
+          "Login Failed",
+          error.response?.data?.message || "Please check your credentials and try again"
+        );
+      }
     },
   });
 
-  const handleSubmitPress = (e: GestureResponderEvent) => {
-    e.preventDefault();
-    handleSubmit();
-  };
-
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Đăng nhập</Text>
-    
-      </View>
+      <Text style={styles.title}>Login</Text>
 
-      <View style={styles.form}>
-        <FormInput
-          label="Email"
-          value={values.email}
-          onChangeText={handleChange('email')}
-          onBlur={() => handleBlur('email')}
-          error={errors.email}
-          touched={touched.email}
-          placeholder="Nhập email của bạn"
-        keyboardType="email-address"
-        autoCapitalize="none"
+      <FormInput
+        label="Enter your mobile number"
+        value={values.phone}
+        onChangeText={(text: string) => handleChange("phone")(text)}
+        onBlur={() => handleBlur("phone")}
+        error={touched.phone ? errors.phone : undefined}
+        keyboardType="phone-pad"
+        placeholder="1712345678"
+        leftIcon={
+          <View style={styles.prefixContainer}>
+            <Text style={styles.prefixText}>+91</Text>
+            <Image
+              source={require("@/assets/icons/tick.png")}
+              style={styles.arrowIcon}
+            />
+          </View>
+        }
       />
-      
-        <FormInput
-          label="Mật khẩu"
-          value={values.password}
-          onChangeText={handleChange('password')}
-          onBlur={() => handleBlur('password')}
-          error={errors.password}
-          touched={touched.password}
-          placeholder="Nhập mật khẩu của bạn"
-        secureTextEntry
-      />
-      
-        <TouchableOpacity 
-          style={styles.forgotPassword}
-          onPress={() => navigation.navigate('ForgotPassword')}
-        >
-          <Text style={styles.forgotPasswordText}>Quên mật khẩu?</Text>
-        </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.button, isSubmitting && styles.buttonDisabled]}
-          onPress={handleSubmitPress}
-          disabled={isSubmitting}
-        >
-          <Text style={styles.buttonText}>
-            {isSubmitting ? 'Đang đăng nhập...' : 'Đăng nhập'}
-          </Text>
-        </TouchableOpacity>
-
-        <View style={styles.registerContainer}>
-          <Text style={styles.registerText}>Chưa có tài khoản? </Text>
-          <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-            <Text style={styles.registerLink}>Đăng ký ngay</Text>
+      <FormInput
+        label="Enter your password"
+        value={values.password}
+        onChangeText={(text: string) => handleChange("password")(text)}
+        onBlur={() => handleBlur("password")}
+        error={touched.password ? errors.password : undefined}
+        secureTextEntry={secureText}
+        placeholder="********"
+        rightIcon={
+          <TouchableOpacity onPress={() => setSecureText(!secureText)}>
+            <Image
+              source={require("@/assets/icons/eye.png")}
+              style={styles.icon}
+            />
           </TouchableOpacity>
-        </View>
+        }
+      />
+
+      <TouchableOpacity style={styles.forgot} onPress={() => navigation.navigate("ForgotPassword")}>
+        <Text style={styles.forgotText}>forgot password?</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity 
+        style={[styles.loginButton, isSubmitting && styles.buttonDisabled]}
+        onPress={() => handleSubmit()}
+        disabled={isSubmitting}
+      >
+        <Text style={styles.loginText}>
+          {isSubmitting ? "Logging in..." : "Login"}
+        </Text>
+      </TouchableOpacity>
+
+      <View style={styles.signupRow}>
+        <Text style={styles.signupText}>Don't have an account? </Text>
+        <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+          <Text style={styles.signupLink}>Sign Up</Text>
+        </TouchableOpacity>
       </View>
+
+      <Text style={styles.orText}>or</Text>
+
+      <TouchableOpacity style={styles.socialButton}>
+        <Image
+          source={assets.images.Google}
+          style={styles.socialIcon}
+        />
+        <Text style={styles.socialText}>Continue with Google</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.socialButton}>
+        <Image
+          source={assets.images.Apple}
+          style={styles.socialIcon}
+        />
+        <Text style={styles.socialText}>Continue with Apple</Text>
+      </TouchableOpacity>
+
+      <Text style={styles.orText}>or</Text>
+
+      <TouchableOpacity>
+        <Text style={styles.guestText}>Continue as Guest</Text>
+      </TouchableOpacity>
     </View>
   );
 };
+
+export default LoginScreen;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background.default,
-  },
-  header: {
     padding: SPACING.L,
-    paddingTop: SPACING.XL,
+    justifyContent: "center",
   },
   title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: colors.text.primary,
-    marginBottom: SPACING.XS,
+    fontSize: typography.fontSize["3xl"],
+    fontWeight: "700",
+    alignSelf: "center",
+    marginBottom: SPACING.XL,
   },
-  subtitle: {
-    fontSize: 16,
-    color: colors.text.secondary,
+  prefixContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginRight: SPACING.S,
   },
-  form: {
-    padding: SPACING.L,
+  prefixText: {
+    fontSize: typography.fontSize.md,
+    color: colors.black,
+    marginRight: SPACING.XS,
   },
-  forgotPassword: {
-    alignSelf: 'flex-end',
-    marginBottom: SPACING.L,
+  arrowIcon: {
+    width: 12,
+    height: 8,
+    marginLeft: SPACING.XS,
   },
-  forgotPasswordText: {
-    color: colors.blue.main,
-    fontSize: 14,
+  icon: {
+    width: 23,
+    height: 15,
+    tintColor: colors.black,
   },
-  button: {
-    ...LAYOUT.BUTTON,
-    ...LAYOUT.BUTTON_PRIMARY,
-    marginBottom: SPACING.M,
+  forgot: {
+    alignSelf: "flex-end",
+    marginTop: SPACING.S,
+  },
+  forgotText: {
+    color: colors.grey[800],
+    fontSize: typography.fontSize.sm,
+    fontWeight: "500",
+  },
+  loginButton: {
+    backgroundColor: colors.buttun.primary,
+    borderRadius: BORDER_RADIUS.M,
+    paddingVertical: SPACING.M,
+    alignItems: "center",
+    marginTop: SPACING.L,
   },
   buttonDisabled: {
-    ...LAYOUT.BUTTON_DISABLED,
+    opacity: 0.7,
   },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
+  loginText: {
+    color: colors.white,
+    fontSize: typography.fontSize.md,
+    fontWeight: "700",
   },
-  registerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+  signupRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginVertical: SPACING.M,
   },
-  registerText: {
-    color: colors.text.secondary,
-    fontSize: 14,
+  signupText: {
+    color: colors.grey[600],
+    fontSize: typography.fontSize.sm,
   },
-  registerLink: {
-    color: colors.blue.main,
-    fontSize: 14,
-    fontWeight: '600',
+  signupLink: {
+    color: colors.black,
+    fontWeight: "700",
+    fontSize: typography.fontSize.sm,
   },
-}); 
+  orText: {
+    textAlign: "center",
+    color: colors.grey[600],
+    marginVertical: SPACING.M,
+  },
+  socialButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: colors.grey[600],
+    borderRadius: BORDER_RADIUS.M,
+    paddingVertical: SPACING.M,
+    justifyContent: "center",
+    marginVertical: SPACING.S,
+  },
+  socialIcon: {
+    width: 20,
+    height: 20,
+    marginRight: SPACING.S,
+  },
+  socialText: {
+    fontSize: typography.fontSize.md,
+    fontWeight: "500",
+  },
+  guestText: {
+    textAlign: "center",
+    color: colors.grey[600],
+    textDecorationLine: "underline",
+    fontSize: typography.fontSize.sm,
+  },
+});
+
