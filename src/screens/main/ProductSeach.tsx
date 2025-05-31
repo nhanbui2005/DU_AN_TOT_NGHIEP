@@ -16,8 +16,6 @@ import { assets } from '../../theme/assets';
 import { BORDER_RADIUS } from '../../theme/layout';
 import { sizes } from '../../theme';
 
-type Props = BottomTabScreenProps<MainStackParamList, 'Home'>;
-
 const products = [
   {
     id: '1',
@@ -49,7 +47,8 @@ const products = [
   },
 ];
 
-export const ProductSeach: React.FC<Props> = () => {
+export const ProductSeach: React.FC = () => {
+  
   const [search, setSearch] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
