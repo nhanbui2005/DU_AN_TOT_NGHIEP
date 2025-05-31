@@ -5,11 +5,12 @@ import { RootStackParamList } from './types';
 import { AuthRouter } from './AuthRouter';
 import { MainRouter } from './MainRouter';
 
+
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const AppRouter = () => {
 
-  const isAuthenticated = true;
+  const isAuthenticated = false;
 
   return (
     <NavigationContainer>
@@ -20,6 +21,30 @@ export const AppRouter = () => {
           <Stack.Screen name="Main" component={MainRouter} />
         )}
       </Stack.Navigator>
+    
     </NavigationContainer>
+    
+
+
   );
 }; 
+
+// import { NavigationContainer } from "@react-navigation/native";
+// import { createNativeStackNavigator } from "@react-navigation/native-stack";
+// import ResetPassword from "../screens/auth/ResetPassword";
+
+// const Stack = createNativeStackNavigator();
+
+// export const AppRouter = () => {
+//   return (
+//     <NavigationContainer>
+//       <Stack.Navigator screenOptions={{ headerShown: false }}>
+//         <Stack.Screen
+//           name="ResetPassword"
+//           component={ResetPassword}
+//           initialParams={{ phone: "0123456789", otp: "123456" }} // ⚠️ giả lập dữ liệu
+//         />
+//       </Stack.Navigator>
+//     </NavigationContainer>
+//   );
+// };

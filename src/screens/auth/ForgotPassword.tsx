@@ -87,7 +87,8 @@ const ForgotPassword = () => {
 
       <TouchableOpacity 
         style={[styles.otpButton, isSubmitting && styles.buttonDisabled]}
-        onPress={() => handleSubmit()}
+        // onPress={() => handleSubmit()}
+        onPress={() => navigation.navigate("Verify", { phone: values.phone })}
         disabled={isSubmitting}
       >
         <Text style={styles.otpText}>
