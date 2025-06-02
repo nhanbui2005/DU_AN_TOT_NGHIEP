@@ -3,7 +3,8 @@ import * as SecureStore from 'expo-secure-store';
 export const STORAGE_KEYS = {
   AUTH: '@auth',
   USER: '@user',
-  TOKEN: '@token',
+  ACCESS_TOKEN: '@access_token',
+  REFRESH_TOKEN: '@refresh_token',
   SETTINGS: '@settings',
   CART: '@cart',
   FAVORITES: '@favorites',
@@ -12,19 +13,22 @@ export const STORAGE_KEYS = {
 export const storageHelper = {
   // Token functions
   setAccessToken: async (token: string) => {
-    await SecureStore.setItemAsync(STORAGE_KEYS.TOKEN, token);
+    await SecureStore.setItemAsync(STORAGE_KEYS.ACCESS_TOKEN, token);
   },
   getAccessToken: async () => {
-    return await SecureStore.getItemAsync(STORAGE_KEYS.TOKEN);
+    return await SecureStore.getItemAsync(STORAGE_KEYS.ACCESS_TOKEN);
   },
   setRefreshToken: async (token: string) => {
-    await SecureStore.setItemAsync(STORAGE_KEYS.TOKEN, token);
+    await SecureStore.setItemAsync(STORAGE_KEYS.REFRESH_TOKEN, token);
   },
   getRefreshToken: async () => {
-    return await SecureStore.getItemAsync(STORAGE_KEYS.TOKEN);
+    return await SecureStore.getItemAsync(STORAGE_KEYS.REFRESH_TOKEN);
   },
   clearTokens: async () => {
-    await SecureStore.deleteItemAsync(STORAGE_KEYS.TOKEN);
+    await Promise.all([
+      SecureStore.deleteItemAsync(STORAGE_KEYS.ACCESS_TOKEN),
+      SecureStore.deleteItemAsync(STORAGE_KEYS.REFRESH_TOKEN),
+    ]);
   },
 
   // User data functions
@@ -42,7 +46,8 @@ export const storageHelper = {
   // Clear all data (delete all keys)
   clearAll: async () => {
     await Promise.all([
-      SecureStore.deleteItemAsync(STORAGE_KEYS.TOKEN),
+      SecureStore.deleteItemAsync(STORAGE_KEYS.ACCESS_TOKEN),
+      SecureStore.deleteItemAsync(STORAGE_KEYS.REFRESH_TOKEN),
       SecureStore.deleteItemAsync(STORAGE_KEYS.USER),
       SecureStore.deleteItemAsync(STORAGE_KEYS.AUTH),
       SecureStore.deleteItemAsync(STORAGE_KEYS.SETTINGS),

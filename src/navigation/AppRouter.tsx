@@ -1,15 +1,13 @@
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { RootStackParamList } from './types';
-import { AuthRouter } from './AuthRouter';
-import MainNavigator from './MainNavigation';
-
+import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { RootStackParamList } from "./types";
+import { AuthRouter } from "./AuthRouter";
+import MainNavigator from "./MainNavigation";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const AppRouter = () => {
-
   const isAuthenticated = false;
 
   return (
@@ -21,13 +19,9 @@ export const AppRouter = () => {
           <Stack.Screen name="Main" component={MainNavigator} />
         )}
       </Stack.Navigator>
-    
     </NavigationContainer>
-    
-
-
   );
-}; 
+};
 
 // import { NavigationContainer } from "@react-navigation/native";
 // import { createNativeStackNavigator } from "@react-navigation/native-stack";

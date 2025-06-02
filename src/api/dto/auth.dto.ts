@@ -10,8 +10,9 @@ export interface UserDto {
 }
 
 export interface LoginDto {
-  email: string;
+  phone: string;
   password: string;
+  userAgent?: string;
 }
 
 export interface RegisterDto {

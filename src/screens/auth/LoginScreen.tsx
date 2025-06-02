@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, StyleSheet, Text, TouchableOpacity, Image, Alert } from "react-native";
+import { View, StyleSheet, Text, TouchableOpacity, Image, Alert, Platform } from "react-native";
 import { useNavigation, CommonActions } from "@react-navigation/native";
 import { FormInput } from "../../components/Form/FormInput";
 import { BORDER_RADIUS, SPACING } from "../../theme/layout";
@@ -8,9 +8,10 @@ import { typography } from "@/src/theme";
 import { assets } from "@/src/theme/assets";
 import { useFormik } from "formik";
 import { loginSchema } from "../../utils/validation";
-import authApi from "../../api/auth";
 import { useAuth } from "../../hooks/useAuth";
 import { AuthNavProp, PageNames } from "../../navigation/types";
+import { storageHelper } from "../../config/storage";
+import authApi from "@/src/api/auth";
 
 const LoginScreen = () => {
   const authNav = useNavigation<AuthNavProp>();
@@ -33,18 +34,33 @@ const LoginScreen = () => {
     validationSchema: loginSchema,
     onSubmit: async (values) => {
       try {
-        const response = await authApi.login(values);
-        login(response.token);
-        authNav.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{ name: "Main" }],
-          })
-        );
-      } catch (error: any) {
+        const deviceId = Platform.OS === 'ios' ? 'ios-device' : 'android-device';
+        const result = await login({
+          phone: values.phone,
+          password: values.password,
+          userAgent: deviceId
+        });
+        
+
+        if (result.success) {
+          Alert.alert("Thành công", "Đăng nhập thành công!");
+
+          authNav.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{ name: "Main" }],
+            })
+          );
+        } else {
+          Alert.alert(
+            "Đăng nhập thất bại",
+           "Vui lòng kiểm tra thông tin đăng nhập và thử lại"
+          );
+        }
+      } catch (error) {
         Alert.alert(
-          "Login Failed",
-          error.response?.data?.message || "Please check your credentials and try again"
+          "Đăng nhập thất bại",
+           "Có lỗi xảy ra. Vui lòng thử lại sau"
         );
       }
     },
@@ -52,19 +68,19 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+      <Text style={styles.title}>Đăng nhập</Text>
 
       <FormInput
-        label="Enter your mobile number"
+        label="Số điện thoại"
         value={values.phone}
         onChangeText={(text: string) => handleChange("phone")(text)}
         onBlur={() => handleBlur("phone")}
         error={touched.phone ? errors.phone : undefined}
         keyboardType="phone-pad"
-        placeholder="1712345678"
+        placeholder="Nhập số điện thoại của bạn"
         leftIcon={
           <View style={styles.prefixContainer}>
-            <Text style={styles.prefixText}>+91</Text>
+            <Text style={styles.prefixText}>+84</Text>
             <Image
               source={require("@/assets/icons/tick.png")}
               style={styles.arrowIcon}
@@ -74,13 +90,13 @@ const LoginScreen = () => {
       />
 
       <FormInput
-        label="Enter your password"
+        label="Mật khẩu"
         value={values.password}
         onChangeText={(text: string) => handleChange("password")(text)}
         onBlur={() => handleBlur("password")}
         error={touched.password ? errors.password : undefined}
         secureTextEntry={secureText}
-        placeholder="********"
+        placeholder="Nhập mật khẩu của bạn"
         rightIcon={
           <TouchableOpacity onPress={() => setSecureText(!secureText)}>
             <Image
@@ -92,7 +108,7 @@ const LoginScreen = () => {
       />
 
       <TouchableOpacity style={styles.forgot} onPress={() => authNav.navigate(PageNames.ForgotPassword)}>
-        <Text style={styles.forgotText}>forgot password?</Text>
+        <Text style={styles.forgotText}>Quên mật khẩu?</Text>
       </TouchableOpacity>
 
       <TouchableOpacity 
@@ -101,25 +117,25 @@ const LoginScreen = () => {
         disabled={isSubmitting}
       >
         <Text style={styles.loginText}>
-          {isSubmitting ? "Logging in..." : "Login"}
+          {isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}
         </Text>
       </TouchableOpacity>
 
       <View style={styles.signupRow}>
-        <Text style={styles.signupText}>Don't have an account? </Text>
+        <Text style={styles.signupText}>Bạn chưa có tài khoản? </Text>
         <TouchableOpacity onPress={() => authNav.navigate(PageNames.Register)}>
-          <Text style={styles.signupLink}>Sign Up</Text>
+          <Text style={styles.signupLink}>Đăng ký</Text>
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.orText}>or</Text>
+      <Text style={styles.orText}>hoặc</Text>
 
       <TouchableOpacity style={styles.socialButton}>
         <Image
           source={assets.images.Google}
           style={styles.socialIcon}
         />
-        <Text style={styles.socialText}>Continue with Google</Text>
+        <Text style={styles.socialText}>Tiếp tục với Google</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.socialButton}>
@@ -127,13 +143,13 @@ const LoginScreen = () => {
           source={assets.images.Apple}
           style={styles.socialIcon}
         />
-        <Text style={styles.socialText}>Continue with Apple</Text>
+        <Text style={styles.socialText}>Tiếp tục với Apple</Text>
       </TouchableOpacity>
 
-      <Text style={styles.orText}>or</Text>
+      <Text style={styles.orText}>hoặc</Text>
 
       <TouchableOpacity>
-        <Text style={styles.guestText}>Continue as Guest</Text>
+        <Text style={styles.guestText}>Tiếp tục với tư cách khách</Text>
       </TouchableOpacity>
     </View>
   );

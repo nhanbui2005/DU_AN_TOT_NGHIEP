@@ -3,6 +3,7 @@ import axios from 'axios';
 export interface LoginRequest {
   phone: string;
   password: string;
+  userAgent: string;
 }
 
 export interface RegisterRequest {
@@ -30,8 +31,9 @@ export interface ResetPasswordRequest {
 
 const authApi = {
   login: async (data: LoginRequest) => {
-    const response = await axios.post(`/auth/login`, data);
+    const response = await axios.post(`/auth/login-phone-or-email`, data);
     return response.data;
+    
   },
 
   register: async (data: RegisterRequest) => {

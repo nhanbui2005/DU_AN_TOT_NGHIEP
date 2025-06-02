@@ -14,6 +14,7 @@ import { AuthNavProp, PageNames } from "@/src/navigation/types";
 const ForgotPassword = () => {
   const authNav = useNavigation<AuthNavProp>();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
 
   const {
     values,
@@ -85,7 +86,7 @@ const ForgotPassword = () => {
       <TouchableOpacity 
         style={[styles.otpButton, isSubmitting && styles.buttonDisabled]}
         // onPress={() => handleSubmit()}
-        onPress={() => navigation.navigate("Verify", { phone: values.phone })}
+        onPress={() => authNav.navigate(PageNames.Verify, {phone: values.phone})}
         disabled={isSubmitting}
       >
         <Text style={styles.otpText}>
