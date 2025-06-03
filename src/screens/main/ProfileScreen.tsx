@@ -11,6 +11,7 @@ import { MainStackParamList } from '../../navigation/types';
 import { Typography } from '../../components/Typography';
 import { assets } from '../../theme/assets';
 import { colors } from '../../theme';
+import { UserScreen } from './UserScreen';
 
 type Props = BottomTabScreenProps<MainStackParamList, 'Profile'>;
 

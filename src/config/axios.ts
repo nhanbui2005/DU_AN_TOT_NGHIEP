@@ -10,9 +10,9 @@ import { ErrorHandler, APIErrorCode } from '../types/error';
 
 // Base URL configuration
 export const BASE_URL = Platform.select({
-  ios: 'http://localhost:3000/api',
-  android: 'http://10.0.2.2:3000/api',
-  default: 'http://localhost:3000/api',
+  ios: 'https://pet-shop-api-server.onrender.com',
+  android: 'https://pet-shop-api-server.onrender.com',
+  default: 'https://pet-shop-api-server.onrender.com',
 });
 
 // Create axios instance
