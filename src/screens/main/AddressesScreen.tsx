@@ -9,10 +9,8 @@ import {
 } from 'react-native';
 import { colors } from '../../theme';
 import { assets } from '../../theme/assets';
-import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { MainStackParamList } from '../../navigation/types';
-
-type Props = BottomTabScreenProps<MainStackParamList, 'Addresses'>;
+import { useNavigation } from '@react-navigation/native';
+import { MainNavProp } from '@/src/navigation/types';
 
 const InfoField = ({ label, value }: { label: string; value: string }) => (
   <View style={styles.fieldContainer}>
@@ -23,7 +21,9 @@ const InfoField = ({ label, value }: { label: string; value: string }) => (
   </View>
 );
 
-export const AddressesScreen: React.FC<Props> = ({ navigation }) => {
+export const AddressesScreen: React.FC = () => {
+  const mainNav = useNavigation<MainNavProp>();
+  
   const address = {
     fullName: 'Nguyễn Văn A',
     email: 'nguyenvana@gmail.com',
@@ -39,7 +39,7 @@ export const AddressesScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity
-        onPress={() => navigation.goBack()}
+        onPress={() => mainNav.goBack()}
         style={styles.backButton}
       >
         <Image source={assets.icons.user.back} style={styles.backIcon} />

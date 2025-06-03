@@ -1,4 +1,4 @@
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { NativeStackNavigationProp, NativeStackScreenProps } from '@react-navigation/native-stack';
 
 export type RootStackParamList = {
   Auth: undefined;
@@ -16,20 +16,23 @@ export type AuthStackParamList = {
 export type AuthScreenProps = NativeStackScreenProps<AuthStackParamList>;
 
 export type MainStackParamList = {
-  Home: undefined;
-  Shop: undefined;
-  Booking: undefined;
-  Card: undefined;
+  Main: undefined
   Check: undefined;
   Setting: undefined;
   Profile: undefined;
   User: undefined;
   Addresses: undefined;
+  ProductDetail:undefined;
+  CheckoutScreen: undefined
+  Notification: undefined
+  CartScreen: undefined
   // Add more screens here
 };
 
+export type MainNavProp = NativeStackNavigationProp<MainStackParamList, 'Main'>;
+export type AuthNavProp = NativeStackNavigationProp<AuthStackParamList, 'Login'>;
+
 export const PageNames = {
-  Auth: 'Auth',
   Main: 'Main',
   Login: 'Login',
   Register: 'Register',
@@ -43,4 +46,8 @@ export const PageNames = {
   Check: 'Check',
   Setting: 'Setting',
   Profile: 'Profile',
+  ProductDetail: 'ProductDetail',
+  CheckoutScreen: 'CheckoutScreen',
+  Notification: 'Notification',
+  CartScreen: 'CartScreen'
 } as const; 

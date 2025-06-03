@@ -7,16 +7,13 @@ import {
     Image,
     TouchableOpacity,
     StyleSheet,
-} from 'react-native';
-import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { MainStackParamList } from '../../navigation/types';
+} from 'react-native'
+import { MainNavProp } from '../../navigation/types';
 import { colors } from '../../theme/colors';
 import { Typography } from '../../components/Typography';
 import { assets } from '../../theme/assets';
 import { BORDER_RADIUS } from '../../theme/layout';
-import { sizes } from '../../theme';
-
-type Props = BottomTabScreenProps<MainStackParamList, 'Home'>;
+import { useNavigation } from '@react-navigation/native';
 
 const products = [
     {
@@ -42,8 +39,9 @@ const products = [
     },
 ];
 
-export const NotificationsScreen: React.FC<Props> = () => {
+export const NotificationsScreen: React.FC = () => {
     const [selectedId, setSelectedId] = useState<string | null>(null);
+  const mainNav = useNavigation<MainNavProp>();
 
     const renderItem = ({ item }: { item: typeof products[0] }) => {
         const isSelected = selectedId === item.id;
@@ -67,7 +65,7 @@ export const NotificationsScreen: React.FC<Props> = () => {
         <View style={styles.container}>
 
             <View style={styles.header}>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={()=>mainNav.goBack()}>
                     <Image source={assets.icons.back} />
                 </TouchableOpacity>
                 <Typography variant="h4" style={styles.headerTitle}>

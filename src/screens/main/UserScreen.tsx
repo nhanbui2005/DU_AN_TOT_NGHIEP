@@ -6,20 +6,19 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { MainStackParamList } from '../../navigation/types';
 import { Typography } from '../../components/Typography';
 import { assets } from '../../theme/assets';
 import { colors } from '../../theme';
+import { useNavigation } from '@react-navigation/native';
+import { MainNavProp } from '@/src/navigation/types';
 
-type Props = BottomTabScreenProps<MainStackParamList, 'User'>;
-
-export const UserScreen = ({ navigation }: Props) => {
+export const UserScreen = () => {
+  const mainNav = useNavigation<MainNavProp>();
   return (
     <ScrollView style={styles.container}>
       
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity onPress={() => mainNav.goBack()} style={styles.backButton}>
           <Image source={assets.icons.user.back} style={styles.backIcon} />
         </TouchableOpacity>
         <Typography style={styles.headerTitle}>User</Typography>
