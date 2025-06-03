@@ -51,21 +51,21 @@ export const HomeScreen = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        <Image source={assets.images.logo} style={styles.logo} />
-        <View style={styles.headerIcons}>
-          <TouchableOpacity onPress={() => mainNav.navigate(PageNames.Notification)}>
-            <Image
-              source={assets.icons.homeScreen.bell}
-              style={styles.headerIcon}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => mainNav.navigate(PageNames.CartScreen)}>
-            <Image
-              source={assets.icons.homeScreen.cart}
-              style={styles.headerIcon}
-            />
-          </TouchableOpacity>
-        </View>
+        <Image
+          source={assets.images.logo} 
+          style={styles.logo}
+        />
+        <TouchableOpacity style={styles.headerIcons}>
+          <Image
+            source={assets.icons.homeScreen.bell} 
+            style={styles.headerIcon}
+          />
+          <Image
+            source={assets.icons.homeScreen.cart} 
+            style={styles.headerIcon}
+          />
+        </TouchableOpacity>
+     
       </View>
 
       <View style={styles.searchContainer}>
@@ -122,17 +122,17 @@ export const HomeScreen = () => {
               <Text> {item.rating}</Text>
             </View>
             <Text style={styles.productName}>{item.name}</Text>
+            <View style={styles.priceRow}>
             <Text style={styles.productPrice}>{item.price}</Text>
             <TouchableOpacity style={styles.addButton}>
-              <Image
-                source={assets.icons.homeScreen.plus}
-                style={styles.plusIcon}
-              />
-            </TouchableOpacity>
-          </TouchableOpacity>
+            <Image
+                 source={assets.icons.homeScreen.plus} 
+                 style={styles.plusIcon}/>
+             </TouchableOpacity>
+            </View>
+          </View>
         )}
       />
-
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Pet Services</Text>
         <Text style={styles.sectionLink}>See All</Text>
@@ -171,22 +171,23 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background.default,
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    padding: 16,
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 5,
+    alignItems: 'center',
   },
   logo: {
-    width: 75,
-    height: 75,
+    width: 100,
+    height:  100,
   },
   headerIcons: {
     flexDirection: "row",
     gap: 12,
   },
   headerIcon: {
-    width: 30,
-    height: 30,
+    width: 40,
+    height: 40,
+    
   },
   searchContainer: {
     flexDirection: "row",
@@ -195,7 +196,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     borderRadius: 8,
     padding: 10,
-    marginBottom: 8,
+    marginBottom: 14,
   },
   searchIcon: {
     width: 24,
@@ -204,7 +205,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontSize: 16,
+    fontSize: 18,
   },
   banner: {
     backgroundColor: colors.blue.light,
@@ -216,12 +217,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   bannerTitle: {
-    fontSize: 14,
+    fontSize: 18,
     fontFamily: Fonts.roboto.bold,
     marginBottom: 4,
   },
   bannerSubtitle: {
-    fontSize: 12,
+    fontSize: 16,
     marginBottom: 6,
     fontFamily: Fonts.roboto.regular,
   },
@@ -244,28 +245,35 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   sectionTitle: {
-    fontWeight: "bold",
-    fontSize: 16,
+    fontWeight: 'bold',
+    fontSize: 20,
+    marginBottom: 10,
+
   },
   sectionLink: {
     color: colors.blue.main,
-    fontSize: 14,
+    fontSize: 18,
   },
   productCard: {
-    backgroundColor: colors.white,
-    width: "48%",
-    borderRadius: 10,
-    padding: 10,
-    marginBottom: 12,
-    shadowColor: colors.black,
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+  backgroundColor: colors.white,
+  width: '47%',
+  height: 260,
+  borderRadius: 10,
+  padding: 10,
+  marginBottom: 12,
+  borderWidth: 1,
+  borderColor: colors.grey[400], 
+  shadowColor: colors.black,
+  shadowOpacity: 0.1,
+  shadowRadius: 4,
+  shadowOffset: { width: 0, height: 2 },
+  elevation: 2,
+    
   },
   productImage: {
-    width: 134,
-    height: 134,
-    resizeMode: "contain",
+    width: 170,
+    height: 160,
+    resizeMode: 'contain',
     marginBottom: 4,
   },
   starRow: {
@@ -279,7 +287,7 @@ const styles = StyleSheet.create({
     marginRight: 2,
   },
   productName: {
-    fontSize: 13,
+    fontSize: 15,
     marginBottom: 2,
   },
   productPrice: {
@@ -291,14 +299,22 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    alignSelf: "flex-end",
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'flex-end',
+    marginRight: 10,
   },
   plusIcon: {
     width: 16,
     height: 16,
   },
+  priceRow: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginTop: 4,
+},
+
   services: {
     flexDirection: "row",
     justifyContent: "space-around",
@@ -323,11 +339,13 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   serviceTitle: {
-    fontWeight: "bold",
+    fontSize: 16,
+    fontWeight: 'bold',
+
     marginBottom: 4,
   },
   serviceDesc: {
-    fontSize: 12,
+    fontSize: 14,
     marginBottom: 8,
   },
   bookNowButton: {
@@ -340,7 +358,8 @@ const styles = StyleSheet.create({
   },
   bookNowText: {
     color: colors.blue.main,
-    fontWeight: "600",
-    fontSize: 12,
+    fontWeight: '600',
+    fontSize: 14,
+
   },
 });
