@@ -11,6 +11,12 @@ import { ErrorHandler, APIErrorCode } from '../types/error';
 // export const BASE_URL = 'http://192.168.2.107:3000';
 
 // Base URL configuration
+// export const BASE_URL = Platform.select({
+//   ios: 'http://localhost:3000/api',
+//   android: 'http://10.0.2.2:3000/api',
+//   default: 'http://localhost:3000/api',
+// });
+
 export const BASE_URL = Platform.select({
   ios: 'https://pet-shop-api-server.onrender.com',
   android: 'https://pet-shop-api-server.onrender.com',
@@ -32,6 +38,27 @@ const axiosInstance: AxiosInstance = axios.create({
   },
 });
 
+// Request interceptor
+axiosInstance.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) => {
+    try {
+      // Get token from MMKV storage
+      const token = storageHelper.getAccessToken();
+
+      // If token exists, add to headers
+      if (token && config.headers) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+
+      return config;
+    } catch (error) {
+      return Promise.reject(error);
+    }
+  },
+  (error: AxiosError) => {
+    return Promise.reject(ErrorHandler.convertAPIError(error));
+  }
+);
 
 
 // Response interceptor

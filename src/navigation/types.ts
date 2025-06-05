@@ -23,9 +23,10 @@ export type MainStackParamList = {
   User: undefined;
   Addresses: undefined;
   ProductDetail:undefined;
-  CheckoutScreen: undefined
-  Notification: undefined
-  CartScreen: undefined
+  CheckoutScreen: undefined;
+  Notification: undefined;
+  CartScreen: undefined;
+  FavouriteScreen:undefined;
   // Add more screens here
 };
 
@@ -49,5 +50,6 @@ export const PageNames = {
   ProductDetail: 'ProductDetail',
   CheckoutScreen: 'CheckoutScreen',
   Notification: 'Notification',
-  CartScreen: 'CartScreen'
+  CartScreen: 'CartScreen',
+  FavouriteScreen:'FavouriteScreen',
 } as const; 
