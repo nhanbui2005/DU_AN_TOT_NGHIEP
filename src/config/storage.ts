@@ -8,6 +8,7 @@ export const STORAGE_KEYS = {
   SETTINGS: 'settings',
   CART: 'cart',
   FAVORITES: 'favorites',
+  USER_AGENT: 'user_agent'
 } as const;
 
 
@@ -31,6 +32,7 @@ export const storageHelper = {
       SecureStore.deleteItemAsync(STORAGE_KEYS.REFRESH_TOKEN),
     ]);
   },
+
 
   // User data functions
   setUserData: async (data: any) => {
@@ -56,4 +58,25 @@ export const storageHelper = {
       SecureStore.deleteItemAsync(STORAGE_KEYS.FAVORITES),
     ]);
   },
-}; 
+
+  getOrCreateWebDeviceId() {
+    let deviceId = localStorage.getItem("deviceId");
+    if (!deviceId) {
+      deviceId = Math.random().toString(36).substring(2) + Date.now().toString(36);
+      localStorage.setItem("deviceId", deviceId);
+    }
+    return deviceId;
+  },
+
+
+  async getOrCreateMobileDeviceId() {
+    let deviceId = await SecureStore.getItemAsync(STORAGE_KEYS.USER_AGENT);
+    if (!deviceId) {
+      deviceId = Math.random().toString(36).substring(2) + Date.now().toString(36);
+      SecureStore.setItemAsync(STORAGE_KEYS.USER_AGENT, deviceId);
+    }
+    return deviceId;
+  },
+  
+
+}

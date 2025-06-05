@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { View, StyleSheet, Text, TouchableOpacity, Image, Alert, Platform } from "react-native";
-import { useNavigation,
+import {
+  useNavigation,
   CommonActions,
 } from "@react-navigation/native";
 import { FormInput } from "../../components/Form/FormInput";
@@ -46,8 +47,14 @@ const LoginScreen = () => {
     validationSchema: loginSchema,
     onSubmit: async (values) => {
       try {
-        const deviceId =
-          Platform.OS === "ios" ? "ios-device" : "android-device";
+        let deviceId = "";
+        if (Platform.OS === "web") {
+          deviceId = storageHelper.getOrCreateWebDeviceId()
+        } else {
+          deviceId = await storageHelper.getOrCreateMobileDeviceId()
+        }
+        console.log("hghb", deviceId);
+
         const response = await axios.post(
           `${BASE_URL}/auth/login-phone-or-email`,
           {
@@ -70,8 +77,8 @@ const LoginScreen = () => {
           ]);
 
           login(accessToken);
-
-          resetToMain();
+         
+          setTimeout(() => resetToMain(), 100);
 
         } else {
           Alert.alert(
@@ -95,7 +102,7 @@ const LoginScreen = () => {
       try {
         const savephone = await AsyncStorage.getItem('savephone');
         const savepassword = await AsyncStorage.getItem('savepassword');
-   
+
         if (savephone || savepassword) {
           setValues({
             phone: savephone || "",
@@ -156,7 +163,7 @@ const LoginScreen = () => {
         <Text style={styles.forgotText}>Quên mật khẩu?</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity 
+      <TouchableOpacity
         style={[styles.loginButton, isSubmitting && styles.buttonDisabled]}
         onPress={() => handleSubmit()}
         disabled={isSubmitting}
@@ -175,7 +182,7 @@ const LoginScreen = () => {
 
       <Text style={styles.orText}>hoặc</Text>
 
-      <TouchableOpacity style={styles.socialButton} onPress={() => {}}>
+      <TouchableOpacity style={styles.socialButton} onPress={() => { }}>
         <Image
           source={assets.images.Google}
           style={styles.socialIcon}
