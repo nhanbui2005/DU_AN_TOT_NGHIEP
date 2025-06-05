@@ -1,4 +1,7 @@
 import axios from 'axios';
+import axiosInstance from '../config/axios';
+import { BASE_URL } from '../config/axios';
+
 
 export interface LoginRequest {
   phone: string;
@@ -35,7 +38,8 @@ const authApi = {
   },
 
   register: async (data: RegisterRequest) => {
-    const response = await axios.post(`/auth/register`, data);
+    console.log('Calling register API at:', `${BASE_URL}/auth/signup-test`);
+    const response = await axiosInstance.post(`/auth/signup-test`, data);
     return response.data;
   },
 

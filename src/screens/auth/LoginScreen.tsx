@@ -1,6 +1,8 @@
-import { useState } from "react";
-import { View, StyleSheet, Text, TouchableOpacity, Image, Alert } from "react-native";
-import { useNavigation, CommonActions } from "@react-navigation/native";
+import { useState, useEffect } from "react";
+import { View, StyleSheet, Text, TouchableOpacity, Image, Alert, Platform } from "react-native";
+import { useNavigation,
+  CommonActions,
+} from "@react-navigation/native";
 import { FormInput } from "../../components/Form/FormInput";
 import { BORDER_RADIUS, SPACING } from "../../theme/layout";
 import { colors } from "@/src/theme";
@@ -8,14 +10,24 @@ import { typography } from "@/src/theme";
 import { assets } from "@/src/theme/assets";
 import { useFormik } from "formik";
 import { loginSchema } from "../../utils/validation";
-import authApi from "../../api/auth";
+import axios from "axios";
 import { useAuth } from "../../hooks/useAuth";
 import { AuthNavProp, PageNames } from "../../navigation/types";
+import { storageHelper } from "../../config/storage";
+import { BASE_URL } from "../../config/axios";
+import { resetToMain } from "../../navigation/RootNavigation";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+
+
 
 const LoginScreen = () => {
+
   const authNav = useNavigation<AuthNavProp>();
   const [secureText, setSecureText] = useState(true);
   const { login } = useAuth();
+
+
 
   const {
     values,
@@ -25,6 +37,7 @@ const LoginScreen = () => {
     handleBlur,
     handleSubmit,
     isSubmitting,
+    setValues,
   } = useFormik({
     initialValues: {
       phone: "",
@@ -33,38 +46,85 @@ const LoginScreen = () => {
     validationSchema: loginSchema,
     onSubmit: async (values) => {
       try {
-        const response = await authApi.login(values);
-        login(response.token);
-        authNav.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{ name: "Main" }],
-          })
+        const deviceId =
+          Platform.OS === "ios" ? "ios-device" : "android-device";
+        const response = await axios.post(
+          `${BASE_URL}/auth/login-phone-or-email`,
+          {
+            phone: values.phone,
+            password: values.password,
+            userAgent: deviceId,
+          }
         );
+
+        console.log("response:", response.data);
+
+        if (response.data.success) {
+          const { accessToken, refreshToken } = response.data.data;
+
+          await Promise.all([
+            storageHelper.setAccessToken(accessToken),
+            storageHelper.setRefreshToken(refreshToken),
+            AsyncStorage.setItem('savephone', values.phone),
+            AsyncStorage.setItem('savepassword', values.password),
+          ]);
+
+          login(accessToken);
+
+          resetToMain();
+
+        } else {
+          Alert.alert(
+            "Đăng nhập thất bại",
+            response.data.message || "Sai tài khoản/mật khẩu"
+          );
+        }
       } catch (error: any) {
-        Alert.alert(
-          "Login Failed",
-          error.response?.data?.message || "Please check your credentials and try again"
-        );
+        console.log("Login error:", error);
+        const message =
+          error.response?.data?.message ||
+          error.message ||
+          "Lỗi không xác định";
+        Alert.alert("Đăng nhập thất bại", message);
       }
     },
   });
 
+  useEffect(() => {
+    const loadSaveData = async () => {
+      try {
+        const savephone = await AsyncStorage.getItem('savephone');
+        const savepassword = await AsyncStorage.getItem('savepassword');
+   
+        if (savephone || savepassword) {
+          setValues({
+            phone: savephone || "",
+            password: savepassword || "",
+          });
+        }
+      } catch (e) {
+        console.log("loi dong 103: ", e);
+      }
+    };
+    loadSaveData();
+  }, []);
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+      <Text style={styles.title}>Đăng nhập</Text>
 
       <FormInput
-        label="Enter your mobile number"
+        label="Số điện thoại"
         value={values.phone}
         onChangeText={(text: string) => handleChange("phone")(text)}
         onBlur={() => handleBlur("phone")}
         error={touched.phone ? errors.phone : undefined}
+        touched={touched.phone}
         keyboardType="phone-pad"
-        placeholder="1712345678"
+        placeholder="Nhập số điện thoại của bạn"
         leftIcon={
           <View style={styles.prefixContainer}>
-            <Text style={styles.prefixText}>+91</Text>
+            <Text style={styles.prefixText}>+84</Text>
             <Image
               source={require("@/assets/icons/tick.png")}
               style={styles.arrowIcon}
@@ -74,13 +134,14 @@ const LoginScreen = () => {
       />
 
       <FormInput
-        label="Enter your password"
+        label="Mật khẩu"
         value={values.password}
         onChangeText={(text: string) => handleChange("password")(text)}
         onBlur={() => handleBlur("password")}
         error={touched.password ? errors.password : undefined}
+        touched={touched.password}
         secureTextEntry={secureText}
-        placeholder="********"
+        placeholder="Nhập mật khẩu của bạn"
         rightIcon={
           <TouchableOpacity onPress={() => setSecureText(!secureText)}>
             <Image
@@ -92,7 +153,7 @@ const LoginScreen = () => {
       />
 
       <TouchableOpacity style={styles.forgot} onPress={() => authNav.navigate(PageNames.ForgotPassword)}>
-        <Text style={styles.forgotText}>forgot password?</Text>
+        <Text style={styles.forgotText}>Quên mật khẩu?</Text>
       </TouchableOpacity>
 
       <TouchableOpacity 
@@ -101,25 +162,25 @@ const LoginScreen = () => {
         disabled={isSubmitting}
       >
         <Text style={styles.loginText}>
-          {isSubmitting ? "Logging in..." : "Login"}
+          {isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}
         </Text>
       </TouchableOpacity>
 
       <View style={styles.signupRow}>
-        <Text style={styles.signupText}>Don't have an account? </Text>
+        <Text style={styles.signupText}>Bạn chưa có tài khoản? </Text>
         <TouchableOpacity onPress={() => authNav.navigate(PageNames.Register)}>
-          <Text style={styles.signupLink}>Sign Up</Text>
+          <Text style={styles.signupLink}>Đăng ký</Text>
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.orText}>or</Text>
+      <Text style={styles.orText}>hoặc</Text>
 
-      <TouchableOpacity style={styles.socialButton}>
+      <TouchableOpacity style={styles.socialButton} onPress={() => {}}>
         <Image
           source={assets.images.Google}
           style={styles.socialIcon}
         />
-        <Text style={styles.socialText}>Continue with Google</Text>
+        <Text style={styles.socialText}>Tiếp tục với Google</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.socialButton}>
@@ -127,13 +188,13 @@ const LoginScreen = () => {
           source={assets.images.Apple}
           style={styles.socialIcon}
         />
-        <Text style={styles.socialText}>Continue with Apple</Text>
+        <Text style={styles.socialText}>Tiếp tục với Apple</Text>
       </TouchableOpacity>
 
-      <Text style={styles.orText}>or</Text>
+      <Text style={styles.orText}>hoặc</Text>
 
       <TouchableOpacity>
-        <Text style={styles.guestText}>Continue as Guest</Text>
+        <Text style={styles.guestText}>Tiếp tục với tư cách khách</Text>
       </TouchableOpacity>
     </View>
   );
@@ -243,4 +304,3 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.sm,
   },
 });
-

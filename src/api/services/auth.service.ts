@@ -20,7 +20,7 @@ export class AuthService {
   }
 
   async register(data: RegisterDto): Promise<ApiResponse<UserDto> | ApiError> {
-    return apiClient.post(`${this.BASE_URL}/register`, data);
+    return apiClient.post(`${this.BASE_URL}/signup-test`, data);
   }
 
   async getProfile(): Promise<ApiResponse<UserDto> | ApiError> {

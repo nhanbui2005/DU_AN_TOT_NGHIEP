@@ -87,7 +87,12 @@ export const ProfileScreen = () => {
       {groupedMenuItems.map((group, index) => (
         <View key={index} style={styles.menuGroup}>
           {group.map((item) => (
-            <TouchableOpacity key={item.id} style={styles.menuItem}>
+            <TouchableOpacity key={item.id} style={styles.menuItem}
+            onPress={()=>{
+              // if(item.title=="Favourite"){
+                
+              // }
+            }}>
               <View
                 style={[styles.iconContainer, { backgroundColor: item.color }]}
               >

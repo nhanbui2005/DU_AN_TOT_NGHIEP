@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Image, StyleSheet, Alert } from "react-native";
+import { View, Text, TouchableOpacity, Image, StyleSheet, Alert, ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { FormInput } from "../../components/Form/FormInput";
 import { SPACING, BORDER_RADIUS } from "../../theme/layout";
@@ -51,6 +51,7 @@ const RegisterScreen = () => {
           ]
         );
       } catch (error: any) {
+        console.log("Register error dong 54: ", error.response || error.message || error);
         Alert.alert(
           "Registration Failed",
           error.response?.data?.message || "Please try again later"
@@ -60,7 +61,7 @@ const RegisterScreen = () => {
   });
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Text style={styles.title}>Register</Text>
 
       <FormInput
@@ -68,6 +69,7 @@ const RegisterScreen = () => {
         value={values.surName}
         onChangeText={(text: string) => handleChange("surName")(text)}
         onBlur={() => handleBlur("surName")}
+        touched={touched.surName}
         error={touched.surName ? errors.surName : undefined}
         placeholder="Enter your surname"
       />
@@ -77,6 +79,7 @@ const RegisterScreen = () => {
         value={values.name}
         onChangeText={(text: string) => handleChange("name")(text)}
         onBlur={() => handleBlur("name")}
+        touched={touched.name}
         error={touched.name ? errors.name : undefined}
         placeholder="Enter your full name"
       />
@@ -87,6 +90,7 @@ const RegisterScreen = () => {
         onChangeText={(text: string) => handleChange("email")(text)}
         onBlur={() => handleBlur("email")}
         error={touched.email ? errors.email : undefined}
+        touched={touched.email}
         keyboardType="email-address"
         placeholder="Enter your email"
         autoCapitalize="none"
@@ -98,6 +102,7 @@ const RegisterScreen = () => {
         onChangeText={(text: string) => handleChange("phone")(text)}
         onBlur={() => handleBlur("phone")}
         error={touched.phone ? errors.phone : undefined}
+        touched={touched.phone}
         keyboardType="phone-pad"
         placeholder="Enter your phone number"
         leftIcon={
@@ -117,6 +122,7 @@ const RegisterScreen = () => {
         onChangeText={(text: string) => handleChange("password")(text)}
         onBlur={() => handleBlur("password")}
         error={touched.password ? errors.password : undefined}
+        touched={touched.password}
         secureTextEntry={secureText}
         placeholder="Enter your password"
         rightIcon={
@@ -135,6 +141,7 @@ const RegisterScreen = () => {
         onChangeText={(text: string) => handleChange("confirmPassword")(text)}
         onBlur={() => handleBlur("confirmPassword")}
         error={touched.confirmPassword ? errors.confirmPassword : undefined}
+        touched={touched.confirmPassword}
         secureTextEntry={secureConfirmText}
         placeholder="Confirm your password"
         rightIcon={
@@ -165,7 +172,7 @@ const RegisterScreen = () => {
           <Text style={styles.loginLink}>Login</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
