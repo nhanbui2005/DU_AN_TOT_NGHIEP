@@ -19,6 +19,7 @@
     "@shopify/flash-list": "^1.8.0",
     "axios": "^1.9.0",
     "expo": "~53.0.9",
+    "expo-secure-store": "~14.2.3",
     "expo-status-bar": "~2.2.3",
     "formik": "^2.4.6",
     "react": "19.0.0",
@@ -29,8 +30,7 @@
     "react-native-web": "^0.20.0",
     "react-redux": "^9.2.0",
     "redux-persist": "^6.0.0",
-    "yup": "^1.6.1",
-    "expo-secure-store": "~14.2.3"
+    "yup": "^1.6.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
