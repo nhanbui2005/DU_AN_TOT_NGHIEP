@@ -5,10 +5,14 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
-} from "react-native";
-import { Typography } from "../../components/Typography";
-import { assets } from "../../theme/assets";
-import { colors } from "../../theme";
+} from 'react-native';
+import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import { MainStackParamList } from '../../navigation/types';
+import { Typography } from '../../components/Typography';
+import { assets } from '../../theme/assets';
+import { colors } from '../../theme';
+import { UserScreen } from './UserScreen';
+
 
 export const ProfileScreen = () => {
   const groupedMenuItems = [
@@ -83,7 +87,12 @@ export const ProfileScreen = () => {
       {groupedMenuItems.map((group, index) => (
         <View key={index} style={styles.menuGroup}>
           {group.map((item) => (
-            <TouchableOpacity key={item.id} style={styles.menuItem}>
+            <TouchableOpacity key={item.id} style={styles.menuItem}
+            onPress={()=>{
+              // if(item.title=="Favourite"){
+                
+              // }
+            }}>
               <View
                 style={[styles.iconContainer, { backgroundColor: item.color }]}
               >

@@ -32,27 +32,7 @@ const axiosInstance: AxiosInstance = axios.create({
   },
 });
 
-// Request interceptor
-axiosInstance.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    try {
-      // Get token from MMKV storage
-      const token = storageHelper.getAccessToken();
 
-      // If token exists, add to headers
-      if (token && config.headers) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-
-      return config;
-    } catch (error) {
-      return Promise.reject(error);
-    }
-  },
-  (error: AxiosError) => {
-    return Promise.reject(ErrorHandler.convertAPIError(error));
-  }
-);
 
 // Response interceptor
 axiosInstance.interceptors.response.use(

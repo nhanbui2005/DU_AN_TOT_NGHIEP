@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,68 +7,80 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
+  ImageSourcePropType,
 } from 'react-native';
 import { colors } from '../../theme/colors';
 import { Typography } from '../../components/Typography';
 import { assets } from '../../theme/assets';
 import { BORDER_RADIUS } from '../../theme/layout';
 import { sizes } from '../../theme';
+import { SearchParams } from '@/src/api/dto/search-dto/search-param.dto';
+import { SearchService } from '@/src/api/services/search-service/search.service';
+import { ProductSearchDto, SearchRespondDto } from '@/src/api/dto/search-dto/search-respond.dto';
 
-const products = [
-  {
-    id: '1',
-    name: 'Premium Dog Food',
-    price: '$22.9',
-    rating: 5,
-    image: 'https://cf.shopee.vn/file/a7e67cdcdfe21b7c9cad4b0ffbc9cf7f',
-  },
-  {
-    id: '2',
-    name: 'Premium Dog Food',
-    price: '$22.9',
-    rating: 5,
-    image: 'https://cf.shopee.vn/file/a7e67cdcdfe21b7c9cad4b0ffbc9cf7f',
-  },
-  {
-    id: '3',
-    name: 'Premium Dog Food',
-    price: '$22.9',
-    rating: 5,
-    image: 'https://cf.shopee.vn/file/a7e67cdcdfe21b7c9cad4b0ffbc9cf7f',
-  },
-  {
-    id: '4',
-    name: 'Premium Dog Food',
-    price: '$22.9',
-    rating: 5,
-    image: 'https://cf.shopee.vn/file/a7e67cdcdfe21b7c9cad4b0ffbc9cf7f',
-  },
-];
-
-export const ProductSeach: React.FC = () => {
-  
-  const [search, setSearch] = useState('');
+export const ProductSearch: React.FC = () => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<'name' | 'price' | 'rating' | null>(null);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
-  const renderItem = ({ item }: { item: typeof products[0] }) => {
-    const isSelected = selectedId === item.id;
+  const [searchParam, setSearchParam] = useState<SearchParams>({
+    limit: 10,
+  });
+
+  const [pages, setPages] = useState<SearchRespondDto>();
+
+  useEffect(() => {
+    const getData = async () => {
+      const pages = await SearchService.search(searchParam);
+      setPages(pages);
+    };
+    getData();
+  }, [searchParam.search]);
+
+  const handleSort = (criteria: 'name' | 'price' | 'rating') => {
+    if (sortBy === criteria) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(criteria);
+      setSortOrder('asc');
+    }
+  };
+
+  const getSortedProducts = (): ProductSearchDto[] => {
+    if (!pages?.data) return [];
+
+    return [...pages.data].sort((a, b) => {
+      if (sortBy === 'price') {
+        return sortOrder === 'asc'
+          ? a.minPromotionalPrice - b.minPromotionalPrice
+          : b.minPromotionalPrice - a.minPromotionalPrice;
+      }
+      return 0;
+    });
+  };
+
+  const renderItem = ({ item }: { item: ProductSearchDto }) => {
+    const isSelected = selectedId === item._id;
 
     return (
       <TouchableOpacity
         style={[styles.card, isSelected && styles.selectedCard]}
-        onPress={() => setSelectedId(item.id)}
+        onPress={() => setSelectedId(item._id)}
       >
-        <Image source={{ uri: item.image }} style={styles.image} />
-        <Text style={styles.stars}>★★★★★ {item.rating}</Text>
+        <Image source={{ uri: item.images[0] }} style={styles.image} />
+        <Text style={styles.stars}>★★★★★</Text>
         <Typography variant="h6" style={styles.title}>
           {item.name}
         </Typography>
-        <Text style={styles.price}>{item.price}</Text>
+        <Text style={styles.price}>
+          {item.minPromotionalPrice < item.maxPromotionalPrice
+            ? `$${(item.minPromotionalPrice / 1000).toFixed(1)} - $${(item.maxPromotionalPrice / 1000).toFixed(1)}`
+            : `$${(item.minPromotionalPrice / 1000).toFixed(1)}`}
+        </Text>
         <TouchableOpacity style={styles.plusButton}>
           <View style={styles.iconpluss}>
-          <Image source={assets.icons.search.pluss}/>
+            <Image source={assets.icons.search.pluss as ImageSourcePropType} />
           </View>
-          
         </TouchableOpacity>
       </TouchableOpacity>
     );
@@ -76,42 +88,56 @@ export const ProductSeach: React.FC = () => {
 
   return (
     <View style={styles.container}>
-
       <View style={styles.header}>
         <TouchableOpacity>
-          <Image source={assets.icons.back} />
+          <Image source={assets.icons.back as ImageSourcePropType} />
         </TouchableOpacity>
         <Typography variant="h5" style={styles.headerTitle}>
           Pet Food
         </Typography>
       </View>
 
-      <TextInput
-        style={styles.searchInput}
-        placeholder="Search in Pet Shop...."
-        value={search}
-        onChangeText={setSearch}
-      />
+      <View style={styles.searchContainer}>
+        <Image
+          source={assets.icons.search.search as ImageSourcePropType}
+          style={styles.searchIcon}
+        />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search in Pet Shop...."
+          value={searchParam.search || ''}
+          onChangeText={(text) =>
+            setSearchParam((prev) => ({
+              ...prev,
+              search: text,
+            }))
+          }
+        />
+      </View>
 
       <View style={styles.filters}>
         <TouchableOpacity style={styles.filterButton}>
-          <Image source={assets.icons.search.vecter}/>
+          <Image source={assets.icons.search.vecter as ImageSourcePropType} />
           <Text style={styles.filterText}>Filter</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.dropdown}>
-          <Text style={styles.dropdownText}>Price</Text>
+        <TouchableOpacity style={styles.dropdown} onPress={() => handleSort('price')}>
+          <Text style={styles.dropdownText}>
+            Price {sortBy === 'price' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}
+          </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.dropdown}>
-          <Text style={styles.dropdownText}>Rating</Text>
+        <TouchableOpacity style={styles.dropdown} onPress={() => handleSort('rating')}>
+          <Text style={styles.dropdownText}>
+            Rating {sortBy === 'rating' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}
+          </Text>
         </TouchableOpacity>
       </View>
 
-      <FlatList
-        data={products}
+      <FlatList<ProductSearchDto>
+        data={getSortedProducts()}
         numColumns={2}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item: ProductSearchDto) => item._id}
         renderItem={renderItem}
         contentContainerStyle={styles.list}
       />
@@ -135,12 +161,22 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginLeft: 10,
   },
-  searchInput: {
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: colors.grey[200],
     borderRadius: BORDER_RADIUS.S,
     paddingHorizontal: 12,
-    paddingVertical: 8,
     marginBottom: 10,
+  },
+  searchIcon: {
+    width: 20,
+    height: 20,
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    paddingVertical: 8,
   },
   filters: {
     flexDirection: 'row',
@@ -205,21 +241,18 @@ const styles = StyleSheet.create({
   price: {
     fontWeight: 'bold',
     color: colors.black,
-    marginLeft: '-60%',
+    marginLeft: '-40%',
   },
   plusButton: {
     position: 'absolute',
     bottom: 8,
     right: 8,
   },
-  mau: {
-    color: colors.blue.main
-  },
-  iconpluss:{
-    backgroundColor:colors.blue.main, 
+  iconpluss: {
+    backgroundColor: colors.blue.main,
     ...sizes.icon.md,
-    borderRadius:BORDER_RADIUS.XL,
-    alignItems:"center",
-    justifyContent:"center"
-  }
+    borderRadius: BORDER_RADIUS.XL,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });
