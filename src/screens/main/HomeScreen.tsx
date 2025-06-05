@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   StyleSheet,
@@ -8,64 +8,64 @@ import {
   FlatList,
   Text,
   TouchableOpacity,
-} from "react-native";
-import { MainNavProp, PageNames } from "../../navigation/types";
-import { colors } from "../../theme/colors";
-import { assets } from "../../theme/assets";
-import { Fonts } from "@/src/theme/fonts";
-import { useNavigation } from "@react-navigation/native";
+} from 'react-native';
+import { colors } from '../../theme/colors';
+import { assets } from '../../theme/assets';
+import { Fonts } from '@/src/theme/fonts';
+import { MainNavProp, PageNames } from '@/src/navigation/types';
+import { useNavigation } from '@react-navigation/native';
+import { useEffect } from 'react';
+import { useState } from 'react';
+import axios from 'axios';
+import { ProductHomeDto } from '@/src/api/dto/home-dto/home.dto';
+import { HomeService } from '@/src/api/services/home-service/home.service';
 
-const popularProducts = [
-  {
-    id: "1",
-    name: "Premium Dog Food",
-    price: "$22.9",
-    rating: 5,
-    image: require("../../../assets/icons/image 3.png"),
-  },
-  {
-    id: "2",
-    name: "Premium Dog Food",
-    price: "$22.9",
-    rating: 5,
-    image: require("../../../assets/icons/image 3.png"),
-  },
-  {
-    id: "3",
-    name: "Leather Dog Collar",
-    price: "$9.9",
-    rating: 5,
-    image: require("../../../assets/icons/image 3.png"),
-  },
-  {
-    id: "4",
-    name: "Premium Dog Food",
-    price: "$22.9",
-    rating: 5,
-    image: require("../../../assets/icons/image 3.png"),
-  },
-];
+
 
 export const HomeScreen = () => {
+  const [popularProducts, setPopularProducts] = useState<ProductHomeDto[]>([]);
+
+  useEffect(() => {
+    const fetchPopularProducts = async () => {
+      try {
+        const data = await HomeService.search({ limit: 4, sortBy: 'createdDate', order: 'desc' })
+        setPopularProducts(data.data)
+      } catch (error) {
+        console.error('Lỗi khi lấy sản phẩm:', error);
+        setPopularProducts([]);
+      }
+    };
+
+    fetchPopularProducts();
+
+    return () => {
+      setPopularProducts([]);
+    };
+  }, []);
+
+
   const mainNav = useNavigation<MainNavProp>();
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Image
-          source={assets.images.logo} 
+          source={assets.images.logo}
           style={styles.logo}
         />
-        <TouchableOpacity style={styles.headerIcons}>
-          <Image
-            source={assets.icons.homeScreen.bell} 
-            style={styles.headerIcon}
-          />
-          <Image
-            source={assets.icons.homeScreen.cart} 
-            style={styles.headerIcon}
-          />
-        </TouchableOpacity>
-     
+        <View style={styles.headerIcons}>
+          <TouchableOpacity onPress={() => mainNav.navigate(PageNames.Notification)}>
+            <Image
+              source={assets.icons.homeScreen.bell}
+              style={styles.headerIcon}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => mainNav.navigate(PageNames.CartScreen)}>
+            <Image
+              source={assets.icons.homeScreen.cart}
+              style={styles.headerIcon}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={styles.searchContainer}>
@@ -86,10 +86,13 @@ export const HomeScreen = () => {
             Get 20% off on all pet food this week
           </Text>
           <TouchableOpacity style={styles.shopNowButton}>
-            <Text style={{ color: "white" }}>Shop now</Text>
+            <Text style={{ color: 'white' }}>Shop now</Text>
           </TouchableOpacity>
         </View>
-        <Image source={assets.images.image} style={styles.bannerImage} />
+        <Image
+          source={assets.images.image}
+          style={styles.bannerImage}
+        />
       </View>
 
       <View style={styles.sectionHeader}>
@@ -99,40 +102,45 @@ export const HomeScreen = () => {
       <FlatList
         data={popularProducts}
         numColumns={2}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id}
         contentContainerStyle={{ paddingHorizontal: 12 }}
-        columnWrapperStyle={{
-          justifyContent: "space-between",
-          marginBottom: 12,
-        }}
+        columnWrapperStyle={{ justifyContent: 'space-between', marginBottom: 12 }}
         renderItem={({ item }) => (
+
           <TouchableOpacity
             style={styles.productCard}
             onPress={() => mainNav.navigate(PageNames.ProductDetail)}
           >
-            <Image source={item.image} style={styles.productImage} />
+            {/* <Image source={item.image} style={styles.productImage} /> */}
+            <Image source={{ uri: item.images[0] }} style={styles.productImage} />
             <View style={styles.starRow}>
-              {[...Array(item.rating)].map((_, i) => (
+              {[...Array(5/*todo: sau nay co don hang roi lam tiep */)].map((_, i) => (
                 <Image
                   key={i}
                   source={assets.icons.homeScreen.star}
                   style={styles.starIcon}
                 />
               ))}
-              <Text> {item.rating}</Text>
+              <Text> {5}</Text>
             </View>
             <Text style={styles.productName}>{item.name}</Text>
-            <View style={styles.priceRow}>
-            <Text style={styles.productPrice}>{item.price}</Text>
+            <Text style={styles.productPrice}>{
+              item.minPromotionalPrice < item.maxPromotionalPrice
+                ? `$${(item.minPromotionalPrice / 1000).toFixed(1)} - $${(item.maxPromotionalPrice / 1000).toFixed(1)}`
+                : `$${(item.minPromotionalPrice / 1000).toFixed(1)}`
+            }</Text>
             <TouchableOpacity style={styles.addButton}>
-            <Image
-                 source={assets.icons.homeScreen.plus} 
-                 style={styles.plusIcon}/>
-             </TouchableOpacity>
-            </View>
-          </View>
+              <Image
+                source={assets.icons.homeScreen.plus}
+                style={styles.plusIcon}
+              />
+            </TouchableOpacity>
+
+
+          </TouchableOpacity>
         )}
       />
+
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Pet Services</Text>
         <Text style={styles.sectionLink}>See All</Text>
@@ -178,20 +186,20 @@ const styles = StyleSheet.create({
   },
   logo: {
     width: 100,
-    height:  100,
+    height: 100,
   },
   headerIcons: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 12,
   },
   headerIcon: {
     width: 40,
     height: 40,
-    
+
   },
   searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: colors.grey[200],
     marginHorizontal: 16,
     borderRadius: 8,
@@ -212,8 +220,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     borderRadius: 10,
     padding: 12,
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginBottom: 16,
   },
   bannerTitle: {
@@ -225,6 +233,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 6,
     fontFamily: Fonts.roboto.regular,
+
   },
   bannerImage: {
     width: 87,
@@ -235,11 +244,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 6,
-    alignSelf: "flex-start",
+    alignSelf: 'flex-start',
   },
   sectionHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
     marginBottom: 8,
     marginTop: 12,
@@ -248,27 +257,27 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 20,
     marginBottom: 10,
-
   },
   sectionLink: {
     color: colors.blue.main,
     fontSize: 18,
   },
   productCard: {
-  backgroundColor: colors.white,
-  width: '47%',
-  height: 260,
-  borderRadius: 10,
-  padding: 10,
-  marginBottom: 12,
-  borderWidth: 1,
-  borderColor: colors.grey[400], 
-  shadowColor: colors.black,
-  shadowOpacity: 0.1,
-  shadowRadius: 4,
-  shadowOffset: { width: 0, height: 2 },
-  elevation: 2,
-    
+    backgroundColor: colors.white,
+    width: '47%',
+    height: 280,
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: colors.grey[400],
+    shadowColor: colors.black,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+    position: 'relative',
+
   },
   productImage: {
     width: 170,
@@ -277,8 +286,8 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   starRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 2,
   },
   starIcon: {
@@ -291,7 +300,7 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   productPrice: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 4,
   },
   addButton: {
@@ -303,21 +312,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'flex-end',
     marginRight: 10,
+    position: 'absolute',
+    bottom: 16,
+
   },
   plusIcon: {
     width: 16,
     height: 16,
   },
   priceRow: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginTop: 4,
-},
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 4,
+  },
 
   services: {
-    flexDirection: "row",
-    justifyContent: "space-around",
+    flexDirection: 'row',
+    justifyContent: 'space-around',
     paddingHorizontal: 12,
     marginBottom: 20,
   },
@@ -325,13 +337,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.pink.light,
     padding: 16,
     borderRadius: 10,
-    width: "48%",
+    width: '48%',
   },
   serviceCardBlue: {
     backgroundColor: colors.blue.light,
     padding: 16,
     borderRadius: 10,
-    width: "48%",
+    width: '48%',
   },
   serviceIcon: {
     width: 24,
@@ -341,7 +353,6 @@ const styles = StyleSheet.create({
   serviceTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-
     marginBottom: 4,
   },
   serviceDesc: {
@@ -354,12 +365,12 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     paddingVertical: 4,
     paddingHorizontal: 8,
-    alignSelf: "flex-start",
+    alignSelf: 'flex-start',
   },
   bookNowText: {
     color: colors.blue.main,
     fontWeight: '600',
     fontSize: 14,
-
   },
 });
+
