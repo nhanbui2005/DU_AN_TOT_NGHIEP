@@ -130,7 +130,7 @@ export const HomeScreen = () => {
                  style={styles.plusIcon}/>
              </TouchableOpacity>
             </View>
-          </View>
+          </TouchableOpacity>
         )}
       />
       <View style={styles.sectionHeader}>
