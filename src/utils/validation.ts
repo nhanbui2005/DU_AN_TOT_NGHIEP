@@ -21,16 +21,16 @@ export const loginSchema = Yup.object().shape({
     .matches(/^[0-9]{10}$/, 'Phone number must be 10 digits'),
   password: Yup.string()
     .required('Password is required')
-    .min(6, 'Password must be at least 6 characters'),
+    .min(3, 'Password must be at least 3 characters'),
 });
 
 export const registerSchema = Yup.object().shape({
   surName: Yup.string()
-    .required('surname is required')
-    .min(2, 'surname must be at least 2 characters'),
+    .required('Surname is required')
+    .min(2, 'Surname must be at least 2 characters'),
   name: Yup.string()
-    .required('name is required')
-    .min(2, 'name must be at least 2 characters'),
+    .required('Name is required')
+    .min(2, 'Name must be at least 2 characters'),
   email: Yup.string()
     .required('Email is required')
     .email('Invalid email format'),

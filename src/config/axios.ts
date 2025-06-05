@@ -1,12 +1,14 @@
-import axios, { 
-  AxiosError, 
-  AxiosInstance, 
+import axios, {
+  AxiosError,
+  AxiosInstance,
   InternalAxiosRequestConfig,
-  AxiosResponse 
+  AxiosResponse
 } from 'axios';
 import { Platform } from 'react-native';
 import { storageHelper } from './storage';
 import { ErrorHandler, APIErrorCode } from '../types/error';
+
+// export const BASE_URL = 'http://192.168.2.107:3000';
 
 // Base URL configuration
 export const BASE_URL = Platform.select({
@@ -14,6 +16,11 @@ export const BASE_URL = Platform.select({
   android: 'https://pet-shop-api-server.onrender.com',
   default: 'https://pet-shop-api-server.onrender.com',
 });
+
+
+console.log('BASE_URL is:', BASE_URL);
+
+
 
 // Create axios instance
 const axiosInstance: AxiosInstance = axios.create({
@@ -25,27 +32,7 @@ const axiosInstance: AxiosInstance = axios.create({
   },
 });
 
-// Request interceptor
-// axiosInstance.interceptors.request.use(
-//   (config: InternalAxiosRequestConfig) => {
-//     try {
-//       // Get token from MMKV storage
-//       const token = storageHelper.getAccessToken();
-      
-//       // If token exists, add to headers
-//       if (token && config.headers) {
-//         config.headers.Authorization = `Bearer ${token}`;
-//       }
-      
-//       return config;
-//     } catch (error) {
-//       return Promise.reject(error);
-//     }
-//   },
-//   (error: AxiosError) => {
-//     return Promise.reject(ErrorHandler.convertAPIError(error));
-//   }
-// );
+
 
 // Response interceptor
 axiosInstance.interceptors.response.use(
@@ -54,30 +41,30 @@ axiosInstance.interceptors.response.use(
   },
   async (error: AxiosError) => {
     const originalRequest = error.config;
-    
+
     // Handle 401 Unauthorized error
     if (error.response?.status === 401 && originalRequest) {
       try {
         // Get refresh token from MMKV
         const refreshToken = await storageHelper.getRefreshToken();
-        
+
         if (refreshToken) {
           // Call refresh token API
           const response = await axios.post(`${BASE_URL}/auth/refresh-token`, {
             refreshToken,
           });
-          
+
           const { accessToken, newRefreshToken } = response.data;
-          
+
           // Save new tokens to MMKV
           storageHelper.setAccessToken(accessToken);
           storageHelper.setRefreshToken(newRefreshToken);
-          
+
           // Retry original request with new token
           if (originalRequest.headers) {
             originalRequest.headers.Authorization = `Bearer ${accessToken}`;
           }
-          
+
           return axiosInstance(originalRequest);
         }
       } catch (refreshError) {
@@ -89,7 +76,7 @@ axiosInstance.interceptors.response.use(
         }));
       }
     }
-    
+
     return Promise.reject(ErrorHandler.convertAPIError(error));
   }
 );
