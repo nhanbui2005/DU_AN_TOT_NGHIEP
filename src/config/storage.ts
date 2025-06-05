@@ -1,4 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
 
 export const STORAGE_KEYS = {
   AUTH: 'auth',
@@ -11,55 +12,65 @@ export const STORAGE_KEYS = {
   USER_AGENT: 'user_agent'
 } as const;
 
+const isWeb = Platform.OS === 'web';
 
 export const storageHelper = {
-  // Token functions
   setAccessToken: async (token: string) => {
-    await SecureStore.setItemAsync(STORAGE_KEYS.ACCESS_TOKEN, token);
+    if (isWeb) {
+      localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, token);
+    } else {
+      await SecureStore.setItemAsync(STORAGE_KEYS.ACCESS_TOKEN, token);
+    }
   },
   getAccessToken: async () => {
-    return await SecureStore.getItemAsync(STORAGE_KEYS.ACCESS_TOKEN);
+    if (isWeb) {
+      return localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN) || null;
+    } else {
+      return await SecureStore.getItemAsync(STORAGE_KEYS.ACCESS_TOKEN);
+    }
   },
   setRefreshToken: async (token: string) => {
-    await SecureStore.setItemAsync(STORAGE_KEYS.REFRESH_TOKEN, token);
+    if (isWeb) {
+      localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, token);
+    } else {
+      await SecureStore.setItemAsync(STORAGE_KEYS.REFRESH_TOKEN, token);
+    }
   },
   getRefreshToken: async () => {
-    return await SecureStore.getItemAsync(STORAGE_KEYS.REFRESH_TOKEN);
+    if (isWeb) {
+      return localStorage.getItem(STORAGE_KEYS.REFRESH_TOKEN) || null;
+    } else {
+      return await SecureStore.getItemAsync(STORAGE_KEYS.REFRESH_TOKEN);
+    }
   },
-  clearTokens: async () => {
-    await Promise.all([
-      SecureStore.deleteItemAsync(STORAGE_KEYS.ACCESS_TOKEN),
-      SecureStore.deleteItemAsync(STORAGE_KEYS.REFRESH_TOKEN),
-    ]);
-  },
-
-
-  // User data functions
   setUserData: async (data: any) => {
-    await SecureStore.setItemAsync(STORAGE_KEYS.USER, JSON.stringify(data));
+    const stringified = JSON.stringify(data);
+    if (isWeb) {
+      localStorage.setItem(STORAGE_KEYS.USER, stringified);
+    } else {
+      await SecureStore.setItemAsync(STORAGE_KEYS.USER, stringified);
+    }
   },
   getUserData: async () => {
-    const data = await SecureStore.getItemAsync(STORAGE_KEYS.USER);
+    const data = isWeb
+      ? localStorage.getItem(STORAGE_KEYS.USER)
+      : await SecureStore.getItemAsync(STORAGE_KEYS.USER);
     return data ? JSON.parse(data) : null;
   },
-  clearUserData: async () => {
-    await SecureStore.deleteItemAsync(STORAGE_KEYS.USER);
-  },
-
-  // Clear all data (delete all keys)
   clearAll: async () => {
-    await Promise.all([
-      SecureStore.deleteItemAsync(STORAGE_KEYS.ACCESS_TOKEN),
-      SecureStore.deleteItemAsync(STORAGE_KEYS.REFRESH_TOKEN),
-      SecureStore.deleteItemAsync(STORAGE_KEYS.USER),
-      SecureStore.deleteItemAsync(STORAGE_KEYS.AUTH),
-      SecureStore.deleteItemAsync(STORAGE_KEYS.SETTINGS),
-      SecureStore.deleteItemAsync(STORAGE_KEYS.CART),
-      SecureStore.deleteItemAsync(STORAGE_KEYS.FAVORITES),
-    ]);
+    if (isWeb) {
+      localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
+      localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
+      localStorage.removeItem(STORAGE_KEYS.USER);
+    } else {
+      await Promise.all([
+        SecureStore.deleteItemAsync(STORAGE_KEYS.ACCESS_TOKEN),
+        SecureStore.deleteItemAsync(STORAGE_KEYS.REFRESH_TOKEN),
+        SecureStore.deleteItemAsync(STORAGE_KEYS.USER),
+      ]);
+    }
   },
-
-  getOrCreateWebDeviceId() {
+   getOrCreateWebDeviceId() {
     let deviceId = localStorage.getItem("deviceId");
     if (!deviceId) {
       deviceId = Math.random().toString(36).substring(2) + Date.now().toString(36);
@@ -77,6 +88,18 @@ export const storageHelper = {
     }
     return deviceId;
   },
-  
+};
 
-}
+
+  
+export const storage = {
+  set: async (key: string, value: string) => {
+    await SecureStore.setItemAsync(key, value);
+  },
+  getString: async (key: string): Promise<string | null> => {
+    return await SecureStore.getItemAsync(key);
+  },
+  delete: async (key: string) => {
+    await SecureStore.deleteItemAsync(key);
+  },
+};

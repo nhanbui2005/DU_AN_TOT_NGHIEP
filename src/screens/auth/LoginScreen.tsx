@@ -1,9 +1,14 @@
 import { useState, useEffect } from "react";
-import { View, StyleSheet, Text, TouchableOpacity, Image, Alert, Platform } from "react-native";
 import {
-  useNavigation,
-  CommonActions,
-} from "@react-navigation/native";
+  View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  Image,
+  Alert,
+  Platform,
+} from "react-native";
+import { useNavigation, CommonActions } from "@react-navigation/native";
 import { FormInput } from "../../components/Form/FormInput";
 import { BORDER_RADIUS, SPACING } from "../../theme/layout";
 import { colors } from "@/src/theme";
@@ -19,16 +24,10 @@ import { BASE_URL } from "../../config/axios";
 import { resetToMain } from "../../navigation/RootNavigation";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-
-
-
 const LoginScreen = () => {
-
   const authNav = useNavigation<AuthNavProp>();
   const [secureText, setSecureText] = useState(true);
   const { login } = useAuth();
-
-
 
   const {
     values,
@@ -49,43 +48,15 @@ const LoginScreen = () => {
       try {
         let deviceId = "";
         if (Platform.OS === "web") {
-          deviceId = storageHelper.getOrCreateWebDeviceId()
+          deviceId = storageHelper.getOrCreateWebDeviceId();
         } else {
-          deviceId = await storageHelper.getOrCreateMobileDeviceId()
+          deviceId = await storageHelper.getOrCreateMobileDeviceId();
         }
-        console.log("hghb", deviceId);
-
-        const response = await axios.post(
-          `${BASE_URL}/auth/login-phone-or-email`,
-          {
-            phone: values.phone,
-            password: values.password,
-            userAgent: deviceId,
-          }
-        );
-
-        console.log("response:", response.data);
-
-        if (response.data.success) {
-          const { accessToken, refreshToken } = response.data.data;
-
-          await Promise.all([
-            storageHelper.setAccessToken(accessToken),
-            storageHelper.setRefreshToken(refreshToken),
-            AsyncStorage.setItem('savephone', values.phone),
-            AsyncStorage.setItem('savepassword', values.password),
-          ]);
-
-          login(accessToken);
-         
-          setTimeout(() => resetToMain(), 100);
-
-        } else {
-          Alert.alert(
-            "Đăng nhập thất bại",
-            response.data.message || "Sai tài khoản/mật khẩu"
-          );
-        }
+        login({
+          phone: values.phone,
+          password: values.password,
+          userAgent: deviceId,
+        });
       } catch (error: any) {
         console.log("Login error:", error);
         const message =
@@ -100,8 +71,8 @@ const LoginScreen = () => {
   useEffect(() => {
     const loadSaveData = async () => {
       try {
-        const savephone = await AsyncStorage.getItem('savephone');
-        const savepassword = await AsyncStorage.getItem('savepassword');
+        const savephone = await AsyncStorage.getItem("savephone");
+        const savepassword = await AsyncStorage.getItem("savepassword");
 
         if (savephone || savepassword) {
           setValues({
@@ -159,7 +130,10 @@ const LoginScreen = () => {
         }
       />
 
-      <TouchableOpacity style={styles.forgot} onPress={() => authNav.navigate(PageNames.ForgotPassword)}>
+      <TouchableOpacity
+        style={styles.forgot}
+        onPress={() => authNav.navigate(PageNames.ForgotPassword)}
+      >
         <Text style={styles.forgotText}>Quên mật khẩu?</Text>
       </TouchableOpacity>
 
@@ -182,19 +156,13 @@ const LoginScreen = () => {
 
       <Text style={styles.orText}>hoặc</Text>
 
-      <TouchableOpacity style={styles.socialButton} onPress={() => { }}>
-        <Image
-          source={assets.images.Google}
-          style={styles.socialIcon}
-        />
+      <TouchableOpacity style={styles.socialButton} onPress={() => {}}>
+        <Image source={assets.images.Google} style={styles.socialIcon} />
         <Text style={styles.socialText}>Tiếp tục với Google</Text>
       </TouchableOpacity>
 
       <TouchableOpacity style={styles.socialButton}>
-        <Image
-          source={assets.images.Apple}
-          style={styles.socialIcon}
-        />
+        <Image source={assets.images.Apple} style={styles.socialIcon} />
         <Text style={styles.socialText}>Tiếp tục với Apple</Text>
       </TouchableOpacity>
 

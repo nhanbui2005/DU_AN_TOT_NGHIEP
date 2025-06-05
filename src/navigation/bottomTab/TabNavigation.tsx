@@ -4,9 +4,9 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { assets } from "@/src/theme/assets";
 import { colors, sizes } from "@/src/theme";
 import { HomeScreen } from "@/src/screens/main/HomeScreen";
-import { ProductSeach } from "@/src/screens/main/ProductSeach";
 import { CardScreen } from "@/src/screens/main/CardScreen";
 import { ProfileScreen } from "@/src/screens/main/ProfileScreen";
+import { ProductSearch } from "@/src/screens/main/ProductSeach";
 
 type RouteName = "HomeTab" | "SearchTab" | "CardTab" | "ProflieTab";
 
@@ -55,7 +55,7 @@ const TabNavigator = () => {
         toValue: -1,
         friction: 3,
         tension: 40,
-        useNativeDriver: true,
+        useNativeDriver: false,
       }).start(() => {
         animationRef.setValue(0);
       });
@@ -106,7 +106,7 @@ const TabNavigator = () => {
       })}
     >
       <Tab.Screen name="HomeTab" component={HomeScreen} />
-      <Tab.Screen name="SearchTab" component={ProductSeach} />
+      <Tab.Screen name="SearchTab" component={ProductSearch} />
       <Tab.Screen name="CardTab" component={CardScreen} />
       <Tab.Screen name="ProflieTab" component={ProfileScreen} />
     </Tab.Navigator>

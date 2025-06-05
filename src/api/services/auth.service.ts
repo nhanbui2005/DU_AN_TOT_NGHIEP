@@ -15,8 +15,8 @@ export class AuthService {
     return AuthService.instance;
   }
 
-  async login(data: LoginDto): Promise<ApiResponse<{ token: string; user: UserDto }> | ApiError> {
-    return apiClient.post(`${this.BASE_URL}/login`, data);
+  async login(data: LoginDto): Promise<ApiResponse<any> | ApiError> {
+    return apiClient.post(`${this.BASE_URL}/login-phone-or-email`, data);
   }
 
   async register(data: RegisterDto): Promise<ApiResponse<UserDto> | ApiError> {

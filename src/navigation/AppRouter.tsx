@@ -1,23 +1,37 @@
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { useSelector } from 'react-redux';
+import { ActivityIndicator, View } from 'react-native';
+
 import { RootStackParamList } from './types';
 import { AuthRouter } from './AuthRouter';
-import { ProductDetails } from "../screens/main/ProductDetails"
-import { CardScreen } from "../screens/main/CardScreen"
-import { NotificationsScreen } from "../screens/main/NotificationsScreen"
-import {ProductSeach}from "../screens/main/ProductSeach"
-import {HomeScreen} from "../screens/main/HomeScreen"
-import MainNavigator from './main/MainNavigation';
-import { FavouriteScreen } from "../screens/main/FavouriteScreen"
-
-
+import MainNavigator from './MainNavigation';
+import { RootState } from '../store';
+import { useAuth } from '../hooks/useAuth'; // <-- bạn đã viết hook này
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const AppRouter = () => {
-  const isAuthenticated = false;
+  const { loadAuthData } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+
+  useEffect(() => {
+    const init = async () => {
+      await loadAuthData(); 
+      setLoading(false);
+    };
+    init();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (
     <NavigationContainer>
@@ -28,28 +42,6 @@ export const AppRouter = () => {
           <Stack.Screen name="Main" component={MainNavigator} />
         )}
       </Stack.Navigator>
-      </NavigationContainer>
-    // <FavouriteScreen/>
-
+    </NavigationContainer>
   );
 };
-
-// import { NavigationContainer } from "@react-navigation/native";
-// import { createNativeStackNavigator } from "@react-navigation/native-stack";
-// import ResetPassword from "../screens/auth/ResetPassword";
-
-// const Stack = createNativeStackNavigator();
-
-// export const AppRouter = () => {
-//   return (
-//     <NavigationContainer>
-//       <Stack.Navigator screenOptions={{ headerShown: false }}>
-//         <Stack.Screen
-//           name="ResetPassword"
-//           component={ResetPassword}
-//           initialParams={{ phone: "0123456789", otp: "123456" }} // ⚠️ giả lập dữ liệu
-//         />
-//       </Stack.Navigator>
-//     </NavigationContainer>
-//   );
-// };
