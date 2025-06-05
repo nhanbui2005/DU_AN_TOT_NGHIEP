@@ -1,18 +1,29 @@
-import axios, { 
-  AxiosError, 
-  AxiosInstance, 
+import axios, {
+  AxiosError,
+  AxiosInstance,
   InternalAxiosRequestConfig,
-  AxiosResponse 
+  AxiosResponse
 } from 'axios';
 import { Platform } from 'react-native';
 import { storageHelper } from './storage';
 import { ErrorHandler, APIErrorCode } from '../types/error';
 
 // Base URL configuration
+// export const BASE_URL = Platform.select({
+//   ios: 'http://localhost:3000/api',
+//   android: 'http://10.0.2.2:3000/api',
+//   default: 'http://localhost:3000/api',
+// });
+
 export const BASE_URL = Platform.select({
   ios: 'https://pet-shop-api-server.onrender.com',
+<<<<<<< Updated upstream
   android: 'https://pet-shop-api-server.onrender.com',
   default: 'https://pet-shop-api-server.onrender.com',
+=======
+  android: 'http://10.0.2.2:3000/api',
+  default: 'http://localhost:3000/api',
+>>>>>>> Stashed changes
 });
 
 // Create axios instance
@@ -31,12 +42,12 @@ axiosInstance.interceptors.request.use(
     try {
       // Get token from MMKV storage
       const token = storageHelper.getAccessToken();
-      
+
       // If token exists, add to headers
       if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`;
       }
-      
+
       return config;
     } catch (error) {
       return Promise.reject(error);
@@ -54,30 +65,30 @@ axiosInstance.interceptors.response.use(
   },
   async (error: AxiosError) => {
     const originalRequest = error.config;
-    
+
     // Handle 401 Unauthorized error
     if (error.response?.status === 401 && originalRequest) {
       try {
         // Get refresh token from MMKV
         const refreshToken = await storageHelper.getRefreshToken();
-        
+
         if (refreshToken) {
           // Call refresh token API
           const response = await axios.post(`${BASE_URL}/auth/refresh-token`, {
             refreshToken,
           });
-          
+
           const { accessToken, newRefreshToken } = response.data;
-          
+
           // Save new tokens to MMKV
           storageHelper.setAccessToken(accessToken);
           storageHelper.setRefreshToken(newRefreshToken);
-          
+
           // Retry original request with new token
           if (originalRequest.headers) {
             originalRequest.headers.Authorization = `Bearer ${accessToken}`;
           }
-          
+
           return axiosInstance(originalRequest);
         }
       } catch (refreshError) {
@@ -89,7 +100,7 @@ axiosInstance.interceptors.response.use(
         }));
       }
     }
-    
+
     return Promise.reject(ErrorHandler.convertAPIError(error));
   }
 );
