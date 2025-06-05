@@ -131,12 +131,12 @@ export const HomeScreen = () => {
                 : `$${(item.minPromotionalPrice / 1000).toFixed(1)}`
             }</Text>
             <TouchableOpacity style={styles.addButton}>
+
               <Image
                 source={assets.icons.homeScreen.plus}
                 style={styles.plusIcon}
               />
             </TouchableOpacity>
-
 
           </TouchableOpacity>
         )}

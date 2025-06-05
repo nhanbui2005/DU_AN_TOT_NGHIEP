@@ -48,6 +48,7 @@ export const assets = {
     search: {
       pluss: require("../../assets/icons/plussign.png"),
       vecter: require("../../assets/icons/Vector.png"),
+      search: require("../../assets/icons/Search.png")
     },
     details: {
       heartinactive: require("../../assets/icons/heart-inactive.png"),
