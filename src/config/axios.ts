@@ -8,12 +8,19 @@ import { Platform } from 'react-native';
 import { storageHelper } from './storage';
 import { ErrorHandler, APIErrorCode } from '../types/error';
 
+// export const BASE_URL = 'http://192.168.2.107:3000';
+
 // Base URL configuration
 export const BASE_URL = Platform.select({
-  ios: 'http://localhost:3000',
-  android: 'http://10.0.2.2:3000',
-  default: 'http://localhost:3000',
+  ios: 'https://pet-shop-api-server.onrender.com',
+  android: 'https://pet-shop-api-server.onrender.com',
+  default: 'https://pet-shop-api-server.onrender.com',
 });
+
+
+console.log('BASE_URL is:', BASE_URL);
+
+
 
 // Create axios instance
 const axiosInstance: AxiosInstance = axios.create({

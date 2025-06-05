@@ -1,14 +1,15 @@
 import * as SecureStore from 'expo-secure-store';
 
 export const STORAGE_KEYS = {
-  AUTH: '@auth',
-  USER: '@user',
-  ACCESS_TOKEN: '@access_token',
-  REFRESH_TOKEN: '@refresh_token',
-  SETTINGS: '@settings',
-  CART: '@cart',
-  FAVORITES: '@favorites',
+  AUTH: 'auth',
+  USER: 'user',
+  ACCESS_TOKEN: 'access_token',
+  REFRESH_TOKEN: 'refresh_token',
+  SETTINGS: 'settings',
+  CART: 'cart',
+  FAVORITES: 'favorites',
 } as const;
+
 
 export const storageHelper = {
   // Token functions

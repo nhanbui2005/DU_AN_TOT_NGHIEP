@@ -1,9 +1,11 @@
 import axios from 'axios';
+import axiosInstance from '../config/axios';
+import { BASE_URL } from '../config/axios';
+
 
 export interface LoginRequest {
   phone: string;
   password: string;
-  userAgent: string;
 }
 
 export interface RegisterRequest {
@@ -31,13 +33,13 @@ export interface ResetPasswordRequest {
 
 const authApi = {
   login: async (data: LoginRequest) => {
-    const response = await axios.post(`/auth/login-phone-or-email`, data);
+    const response = await axios.post(`/auth/login`, data);
     return response.data;
-    
   },
 
   register: async (data: RegisterRequest) => {
-    const response = await axios.post(`/auth/register`, data);
+    console.log('Calling register API at:', `${BASE_URL}/auth/signup-test`);
+    const response = await axiosInstance.post(`/auth/signup-test`, data);
     return response.data;
   },
 

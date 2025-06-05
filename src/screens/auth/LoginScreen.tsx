@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { View, StyleSheet, Text, TouchableOpacity, Image, Alert, Platform } from "react-native";
-import { useNavigation, CommonActions } from "@react-navigation/native";
+import { useNavigation,
+  CommonActions,
+} from "@react-navigation/native";
 import { FormInput } from "../../components/Form/FormInput";
 import { BORDER_RADIUS, SPACING } from "../../theme/layout";
 import { colors } from "@/src/theme";
@@ -8,15 +10,24 @@ import { typography } from "@/src/theme";
 import { assets } from "@/src/theme/assets";
 import { useFormik } from "formik";
 import { loginSchema } from "../../utils/validation";
+import axios from "axios";
 import { useAuth } from "../../hooks/useAuth";
 import { AuthNavProp, PageNames } from "../../navigation/types";
 import { storageHelper } from "../../config/storage";
-import authApi from "@/src/api/auth";
+import { BASE_URL } from "../../config/axios";
+import { resetToMain } from "../../navigation/RootNavigation";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+
+
 
 const LoginScreen = () => {
+
   const authNav = useNavigation<AuthNavProp>();
   const [secureText, setSecureText] = useState(true);
   const { login } = useAuth();
+
+
 
   const {
     values,
@@ -26,6 +37,7 @@ const LoginScreen = () => {
     handleBlur,
     handleSubmit,
     isSubmitting,
+    setValues,
   } = useFormik({
     initialValues: {
       phone: "",
@@ -34,37 +46,68 @@ const LoginScreen = () => {
     validationSchema: loginSchema,
     onSubmit: async (values) => {
       try {
-        const deviceId = Platform.OS === 'ios' ? 'ios-device' : 'android-device';
-        const result = await login({
-          phone: values.phone,
-          password: values.password,
-          userAgent: deviceId
-        });
-        
+        const deviceId =
+          Platform.OS === "ios" ? "ios-device" : "android-device";
+        const response = await axios.post(
+          `${BASE_URL}/auth/login-phone-or-email`,
+          {
+            phone: values.phone,
+            password: values.password,
+            userAgent: deviceId,
+          }
+        );
 
-        if (result.success) {
-          Alert.alert("Thành công", "Đăng nhập thành công!");
+        console.log("response:", response.data);
 
-          authNav.dispatch(
-            CommonActions.reset({
-              index: 0,
-              routes: [{ name: "Main" }],
-            })
-          );
+        if (response.data.success) {
+          const { accessToken, refreshToken } = response.data.data;
+
+          await Promise.all([
+            storageHelper.setAccessToken(accessToken),
+            storageHelper.setRefreshToken(refreshToken),
+            AsyncStorage.setItem('savephone', values.phone),
+            AsyncStorage.setItem('savepassword', values.password),
+          ]);
+
+          login(accessToken);
+
+          resetToMain();
+
         } else {
           Alert.alert(
             "Đăng nhập thất bại",
-           "Vui lòng kiểm tra thông tin đăng nhập và thử lại"
+            response.data.message || "Sai tài khoản/mật khẩu"
           );
         }
-      } catch (error) {
-        Alert.alert(
-          "Đăng nhập thất bại",
-           "Có lỗi xảy ra. Vui lòng thử lại sau"
-        );
+      } catch (error: any) {
+        console.log("Login error:", error);
+        const message =
+          error.response?.data?.message ||
+          error.message ||
+          "Lỗi không xác định";
+        Alert.alert("Đăng nhập thất bại", message);
       }
     },
   });
+
+  useEffect(() => {
+    const loadSaveData = async () => {
+      try {
+        const savephone = await AsyncStorage.getItem('savephone');
+        const savepassword = await AsyncStorage.getItem('savepassword');
+   
+        if (savephone || savepassword) {
+          setValues({
+            phone: savephone || "",
+            password: savepassword || "",
+          });
+        }
+      } catch (e) {
+        console.log("loi dong 103: ", e);
+      }
+    };
+    loadSaveData();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -76,6 +119,7 @@ const LoginScreen = () => {
         onChangeText={(text: string) => handleChange("phone")(text)}
         onBlur={() => handleBlur("phone")}
         error={touched.phone ? errors.phone : undefined}
+        touched={touched.phone}
         keyboardType="phone-pad"
         placeholder="Nhập số điện thoại của bạn"
         leftIcon={
@@ -95,6 +139,7 @@ const LoginScreen = () => {
         onChangeText={(text: string) => handleChange("password")(text)}
         onBlur={() => handleBlur("password")}
         error={touched.password ? errors.password : undefined}
+        touched={touched.password}
         secureTextEntry={secureText}
         placeholder="Nhập mật khẩu của bạn"
         rightIcon={
@@ -130,7 +175,7 @@ const LoginScreen = () => {
 
       <Text style={styles.orText}>hoặc</Text>
 
-      <TouchableOpacity style={styles.socialButton}>
+      <TouchableOpacity style={styles.socialButton} onPress={() => {}}>
         <Image
           source={assets.images.Google}
           style={styles.socialIcon}
@@ -259,4 +304,3 @@ const styles = StyleSheet.create({
     fontSize: typography.fontSize.sm,
   },
 });
-
