@@ -24,9 +24,12 @@ export type MainStackParamList = {
   Addresses: undefined;
   ProductDetail:undefined;
   CheckoutScreen: undefined;
-  Notification: undefined;
+  NotificationsScreen: undefined;
   CartScreen: undefined;
-  FavouriteScreen:undefined;
+  FavouriteScreen: undefined;
+  UserScreen: undefined;
+  NewAddressScreen: undefined;
+  ProfileScreen: undefined;
   // Add more screens here
 };
 

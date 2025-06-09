@@ -5,16 +5,16 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
-} from 'react-native';
-import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import { MainStackParamList } from '../../navigation/types';
-import { Typography } from '../../components/Typography';
-import { assets } from '../../theme/assets';
-import { colors } from '../../theme';
-import { UserScreen } from './UserScreen';
-
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { MainNavProp } from "@/src/navigation/types";
+import { Typography } from "../../components/Typography";
+import { assets } from "../../theme/assets";
+import { colors } from "../../theme";
 
 export const ProfileScreen = () => {
+   const navigation = useNavigation<MainNavProp>();
+
   const groupedMenuItems = [
     [
       {
@@ -22,12 +22,14 @@ export const ProfileScreen = () => {
         title: "Personal Info",
         icon: assets.icons.profileScreen.user,
         color: colors.white,
+        screen: "UserScreen",
       },
       {
         id: "2",
         title: "Addresses",
         icon: assets.icons.profileScreen.adderss,
         color: colors.white,
+        screen: "NewAddressScreen",
       },
     ],
     [
@@ -36,18 +38,21 @@ export const ProfileScreen = () => {
         title: "Cart",
         icon: assets.icons.profileScreen.card,
         color: colors.white,
+        screen: "CartScreen",
       },
       {
         id: "4",
         title: "Favourite",
         icon: assets.icons.profileScreen.favourite,
         color: colors.white,
+        screen: "FavouriteScreen",
       },
       {
         id: "5",
         title: "Notifications",
         icon: assets.icons.profileScreen.notification,
         color: colors.white,
+        screen: "NotificationsScreen",
       },
     ],
     [
@@ -56,12 +61,14 @@ export const ProfileScreen = () => {
         title: "FAQs",
         icon: assets.icons.profileScreen.fa,
         color: colors.white,
+        screen: "FAQScreen",
       },
       {
         id: "7",
         title: "Đăng xuất",
         icon: assets.icons.profileScreen.setting,
         color: colors.white,
+        action: () => {},
       },
     ],
   ];
@@ -87,12 +94,17 @@ export const ProfileScreen = () => {
       {groupedMenuItems.map((group, index) => (
         <View key={index} style={styles.menuGroup}>
           {group.map((item) => (
-            <TouchableOpacity key={item.id} style={styles.menuItem}
-            onPress={()=>{
-              // if(item.title=="Favourite"){
-                
-              // }
-            }}>
+            <TouchableOpacity
+              key={item.id}
+              style={styles.menuItem}
+              onPress={() => {
+                if (item.screen) {
+                  navigation.navigate(item.screen as never);
+                } else if (item.action) {
+                  item.action();
+                }
+              }}
+            >
               <View
                 style={[styles.iconContainer, { backgroundColor: item.color }]}
               >
@@ -125,13 +137,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderBottomWidth: 1,
     borderBottomColor: colors.grey[200],
-  },
-  backButton: {
-    padding: 8,
-  },
-  backIcon: {
-    width: 24,
-    height: 24,
   },
   headerTitle: {
     marginLeft: 10,
